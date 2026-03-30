@@ -1,0 +1,480 @@
+TRADERS OPERATIONAL MANUAL
+Digital Sports Tech — Internal Use Only
+
+# 1. REGRADING
+
+## 1.1 Regrade an Individual Bet
+
+Use the Bet Verification Report to change the grading of individual bets. Found under Trading Reports v2.
+URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/bet-verification
+
+- Search for bets using Bet ID, Game ID, or Title.
+- Change settlement to Win / Lose / Void for single bets.
+- For accumulators, click Amend and fix the affected bet leg.
+- Use the checkbox on the far-left to bulk-action settlement when needed.
+
+NOTE: Use this for individual client regrade requests. To fix multiple bets on the same market, use the Bet Events Report instead.
+Bet Events Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/acca-bet-leg
+Bet Verification Guide: https://docs.google.com/document/d/15gx6cDn0GKpt_YIigl1r6CWTtKafAJBfUYJNF6rhAUY/edit
+
+## 1.2 Regrade a Market Due to Technical Issue or Incorrect Stat at Settlement
+
+If a market result needs to change due to a technical issue or incorrect stat at the time of settlement:
+
+Step A — Fix Data Feed Clients First via DFM Market Report:
+1. Open the DFM Market Report (Push Manager menu). URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/dfm
+2. Use table filters to locate markets for the affected player(s).
+3. Click the market row, select the new result, enter the score, then click Save / Re-push.
+4. Bulk-change: use the left-hand checkboxes to select all markets requiring the same change.
+
+Step B — Fix Integrated Client Bets via Bet Events Report:
+1. Open the Bet Events Report (Trading Reports v2). URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/acca-bet-leg
+2. Filter by Game ID or Bet Title.
+3. Change settlement to Win / Lose / Void — all bets and accumulators containing this market will be re-graded.
+4. Remember to fix both sides: if correcting the Over, also fix the Under.
+
+WARNING: Do NOT manually fix individual bets one at a time via Bet Verification Report for market-wide issues.
+
+Soccer-Specific — Incorrect or Missing Data:
+- If no data or significantly incorrect data was received for a soccer game, update player stats in SST.
+- Find the game in SST, update the player stats, and click Save.
+- SST URL: https://tt-us-x234525.digitalsportstech.com/#!/settlement-result
+
+## 1.3 Reset Grading for an Entire Event
+
+1. Reset the game in NIX Games Manager. Game must be Final with Parsed Status 2.
+   URL: https://backend.digitalsportstech.com/player-feed/gamemanager/game
+   Check status at: https://backend.digitalsportstech.com/verification/game-change
+2. Confirm that Data Feed market statuses have been updated to Pending.
+   NIX Bet Events Report: https://backend.digitalsportstech.com/player-feed/bet-events-report
+3. The game is now ready for re-verification in SST.
+   SST URL: https://tt-us-x234525.digitalsportstech.com/#!/settlement-result
+
+NOTE: For non-soccer leagues — before starting verification, change 'Is Final Resulted by Parser' to NO in NIX Leagues Management. Set it back to YES once verification has started.
+NIX Leagues Management: https://backend.digitalsportstech.com/leagues
+
+## 1.4 Post-Settlement Stat Changes
+
+Post-settlement stat changes happen frequently. For example, an NBA player's rebounds changing from 7 to 8 a few hours after the game.
+
+Our policy: We do NOT retrospectively correct all bets/markets when a stat changes after settlement. However:
+
+1. If an integrated client queries a late stat change — manually fix their individual bets on request in Bet Verification Report, then respond:
+   "It appears a correction was made to this player's score post our settlement, so we'll regrade this bet for you. Please advise if you would like other bets placed on the same outcome re-graded as well."
+
+2. For US Sports — re-push corrected settlements to the data feed via DFM Market Report.
+
+3. For Soccer — do NOT re-push updated settlements based on stat changes.
+
+
+# 2. MANUAL SETTLEMENT INTERVENTION
+
+## 2.1 DFEX Alerts: High Number of Unsettled Markets
+
+If a DFEX alert appears in the trading channel with a HIGH number of unsettled markets, the cause is usually unsettled Game Markets (GM) received from our provider (OAM).
+
+1. Check the Bet Events Report (BER) to confirm whether player markets have settled.
+   BER URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/acca-bet-leg
+2. If player markets have NOT settled — refer to Section 2.3 (Bet Events Player Markets Not Settled).
+3. If player markets HAVE settled — check GFM Report to see if GMs have settled.
+   GFM Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/report
+4. If GMs HAVE settled in GFM but DFeX bets are still unsettled — manually settle via BER then DFX Report.
+   DFX Report: https://tt-us-x234525.digitalsportstech.com/#!/dfx-markets
+5. If GMs have NOT settled in GFM — email OAM support:
+   To: support@oddsandmore.atlassian.net
+   Subject: URGENT – GM Settlements Not Received
+
+Manual GM Settlement Procedure:
+1. Review BER (Pending) — note all GM markets requiring manual settlement.
+2. Review DFX Report (Pending Markets) — note GM markets within prebuilt Acca bets.
+3. Manually settle ONLY the required markets in the GFM report.
+   Priority: clear all important markets across unsettled events to unblock general settlement. Not all GMs need immediate handling — some additional markets may be handled if a client writes in.
+
+## 2.2 DFEX Alerts: Small Number of Unsettled Markets
+
+In most cases this means the market settled but the Nix settlement message was not received by TT.
+
+1. Open DFeX Markets Report in TT and filter by the game.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/dfx-markets
+2. Search for DFeX combo bets showing as Pending.
+3. Open Bet Verification in the Nix system.
+   URL: https://backend.digitalsportstech.com/verification
+4. Locate each pending bet from the DFeX report and resettle in Nix Bet Verification — this triggers a fresh settlement message to TT.
+
+## 2.3 Manually Settle Game Markets (GM) for an Event
+
+We receive a Slack alert in #trading-team when markets aren't settled: UNSETTLED DFEX MARKETS ALERTS.
+
+1. Check the GFM Report — filter by Game ID. For Non-Player League events, filter by Market ID.
+   GFM Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/report
+   Event IDs: https://tt-us-x234525.digitalsportstech.com/#!/trading-reports/game-activity
+2. If P (Pending) is greyed out, settlement is missing for that market.
+3. Step 1 — Try manual unblock via re-sync: click Markets Sync in Games Manager (PL) for the event.
+   Games Manager (PL): https://tt-us-x234525.digitalsportstech.com/#!/ttv2/pl
+4. Step 2 — If re-sync doesn't resolve, manually settle each market in GFM:
+   - Soccer: use Whoscored.com for results.
+   - US Sports: use ESPN.com — click W/L/D/V for each market.
+
+WARNING: Be careful to get settlement correct the first time. Changing settlement in GFM after an error will NOT fix already-settled bets.
+If you incorrectly settle a market: notify the team in trading channels, then go to Bet Events Report and fix affected markets.
+
+## 2.4 Bet Events: Player Markets Not Settled
+
+1. Check when game ended in NIX Game Changes report (Status 4).
+   URL: https://backend.digitalsportstech.com/verification/game-change
+2. Locate event in NIX Game Activity Manager.
+   URL: https://backend.digitalsportstech.com/propbetting/game-activity
+3. Review game status:
+
+If Is_completed = Y and Is_finally_resulted = N:
+- US Sports: Sportradar has not closed the game. Contact: support@sportradar.com
+- EBL: Results not received in SST. Contact: support@sportradar.com
+- Soccer: Check DSG Status in SST (https://tt-us-x234525.digitalsportstech.com/#!/settlement-result):
+  - DSG Results Pushed — indicates whether we received player stats from DSG
+  - DSG Is Final — indicates whether DSG has marked the game as Final
+  - If either = NO: contact DSG support at support@datasportsgroup.com
+  - If DSG Results Pushed = YES and stats are visible but settlement hasn't triggered: sanity-check stats, then manually click [START VERIFICATION] in SST
+- EBL/Soccer: If all stats present in SST but Is_finally_resulted = N — SST auto-settlement hasn't run. Manually trigger by clicking Start Verification.
+
+If Is_finally_resulted = Y but blocked by Game Markets:
+1. Check GFM Report for Game Market settlements.
+2. If NO settlements: click Markets Sync in Games Manager (PL).
+3. If YES settlements: escalate to senior management and tech support.
+   Games Manager (PL): https://tt-us-x234525.digitalsportstech.com/#!/ttv2/pl
+
+## 2.5 Manually Settling Soccer Games via SST
+
+Follow the dedicated SST Settlement Steps document:
+https://docs.google.com/document/d/1dKTWT1aQFj9sVQY1_0PYfy4dJ_APIfIXpboKrA5iIrg/edit
+
+
+# 3. VOIDING PROTOCOLS
+
+## 3.1 General Voiding Rules
+
+WARNING: Always obtain approval from Jason, Matt, or Ari before voiding any bets due to a pricing issue.
+
+- Avoid manual typos/mistakes. If one occurs, alert the team immediately before clients become aware.
+- Pricing mistakes caused by technical issues are more likely to be approved for voiding.
+- Certain clients (e.g. Bovada) do not allow us to void pre-match bets.
+
+## 3.2 MLB Game Postponed
+
+Trigger: Trader email with subject "IMPORTANT: Game ID Void Alert"
+
+1. Confirm the game is postponed (not just in a rain delay).
+2. Void the game via the Void Games Report.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/void-games
+3. Check Game Manager to see if the rescheduled game has the same Game ID:
+   - Different Game ID: no further action needed after voiding.
+   - Same Game ID: manually void Game Markets via GFM Report.
+   GFM Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/report
+4. After 15+ minutes (once settled), revert all Game Markets back to Pending in GFM so they can be reused.
+5. Check Bet Events Report to confirm all markets are voided. Game Prop markets may need to be voided manually.
+   Bet Events Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/acca-bet-leg
+
+## 3.3 MLB Game Ends Before 8.5 Innings
+
+Sometimes a game finishes before 8.5 innings due to rain.
+
+- Player Markets: void through Void Games Report. Any markets settled during the game (aggressive settlement) stand as Won/Loss.
+- Game Markets: should settle Won/Loss from the feed automatically. Handicap void. Total Runs void if outcome unknown. Settle manually if feed doesn't send results.
+- Game Props: settle Won/Loss except the following should be voided:
+  - Will There Be Extra Innings
+  - Team with Most Hits
+  - Total Hits
+  - A Hit Every Inning
+  - A Run Scored Every Inning
+  - Perfect Game
+  - Blown Save in Game
+  - Either Pitcher to Throw a No-Hitter
+
+## 3.4 Soccer Match Suspended or Postponed
+
+Trigger: Trader email with subject "IMPORTANT: Game ID Void Alert"
+
+1. Confirm the match is postponed. If only suspended, wait to see if it resumes.
+2. If postponed or will not resume within 36 hours, void via Void Games Report.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/void-games
+3. Check that all bets and markets are voided.
+
+NOTE: All bets should be voided for soccer if a game starts and is then suspended — even if an outcome was already determined on a player market.
+
+
+# 4. CONFIGURATIONS
+
+## 4.1 Soccer Player Mapping
+
+Slack alerts about unmapped soccer players must not be ignored. We have 15 minutes to complete mapping before the player is excluded from settlement.
+
+DSG Player Mapping Report: https://tt-us-x234525.digitalsportstech.com/#!/dsg-players
+Detailed Mapping Instructions: https://docs.google.com/document/d/1eNWVdWAgqOwZCbvP65iH3q4UIrSGmkoT3Usp16dMYHA/edit
+
+Re-mapping a Previously Mapped Player:
+If an alert fires for a player who was already mapped, DSG has likely changed the spelling or added a special character to the player name. There will be:
+- One entry with both DSG and NIX IDs
+- One entry with only a DSG ID
+
+To fix:
+1. Remove the DSG ID from the entry that has both NIX and DSG IDs.
+2. Map the NIX ID to the new DSG entry.
+
+## 4.2 DFX Markets Not Generated or Settled
+
+This usually indicates one of the market-generation jobs has stalled.
+
+1. Go to DFX Scheduler Report in TT.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/dfx-scheduler
+2. Click the Refresh button (top right) to force-restart all jobs.
+
+## 4.3 Manually Disable a Non-Player League Event (e.g. Tennis)
+
+1. Go to Games Manager (NPL) in TT.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/npl
+2. Uncheck both GFM Active and Game Active checkboxes.
+3. Click Disabled Lock to prevent the game from being re-enabled automatically.
+
+
+# 5. CLIENT ISSUES
+
+## 5.1 Data Feed Clients — Missing Markets or Settlement
+
+Data feed clients: Sportradar, Kaizen, Altenar, BetBy, Codere, Chalkboard, BetVictor, Sportsbook.ag
+
+Client Missing Markets — most likely cause is the event is not mapped:
+1. Check Push Manager Mapping Report.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/mapping
+2. Filter by client and league to see if the event is mapped:
+   - If YES: confirm the correct ID with the client.
+   - If NO: map the game by clicking the row and selecting the correct DST Game ID.
+
+Client Missing Settlements:
+1. Check DFM Audit Report to confirm all markets have settled.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/dfmaudit
+2. If settled, check DFM Logs Report — filter by the client's sportsbook name.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/logs
+   - Verify timestamp of last messages and confirm successful (Code 200 or 1).
+   - Open last message to confirm it was a settlement message (Status = verified).
+3. If messages sent successfully, share a screenshot and the Message ID with the client, then re-push.
+
+Re-pushing Data Feed to Clients via DFM Game Report:
+- Search by DST Game ID. URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/dfmgame
+- Click the game to open modal.
+- Click Re-push Player Feed (DFM / Sportradar).
+- You can also click Re-push DFX/GP/CMs if they are missing from our frontend.
+
+NOTE: If re-pushing doesn't resolve it, there may be a game mapping issue or a client-side problem. Ask the client to check with their tech team, then escalate to Jason / Matt / Ari.
+
+Sportradar-Specific Notes:
+- Check SR Audit Report: PROD PMOS/EX columns should = 0 while PROD Settlement has a number — this means all settlements have been sent.
+  URL: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/sraudit
+- SR Logs: https://tt-us-x234525.digitalsportstech.com/#!/push-manager/sportradar
+
+## 5.2 Pending Bet Not Settled on Client Side
+
+1. Check the Bet Verification Report.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/bet-verification
+2. If the bet is present and Pending: settle it.
+3. If the bet is present and Settled: check the checkbox on left → choose Reset Fail Count from dropdown → click Submit to re-push the result.
+4. If the bet is NOT in Bet Verification: check Integration Request Report.
+   URL (V2): https://tt-us-x234525.digitalsportstech.com/#!/ttv2/integration-request-report
+   - Successful bets have a Debit row and a Credit row with HTTP code 200 or 201.
+   - Unsuccessful bets are missing a row or have code 0 or 400.
+   - Refer to Reset Fail Count reference and template email responses for wallet-issue queries.
+
+## 5.3 Client Getting Bet Placement Error Messages
+
+Check wallet logs in the Integration Request Report — likely an error with the client's wallet at bet submission.
+V1 Bets: https://backend.digitalsportstech.com/integration-request-report
+V2 Bets: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/integration-request-report
+Filter by User ID.
+
+## 5.4 Client Having Issues with Risk Limits
+
+We can check user risk limits without needing the user's login credentials.
+
+1. Open the Builder URL, replace 'sb' and 'user' with the specific client and user:
+   https://bv2-us.digitalsportstech.com/betbuilder?sb=betonline&user=B4809193&demo=true&shwExp=true
+   Always use lowercase for the sportsbook (sb) parameter.
+2. Add bets to the betslip and review max exposure in the browser console (Response tab).
+3. To identify which Risk Limit was applied: open Debug section in the console. Look for rule = true and check where the rule originated in the risk management system.
+
+## 5.5 Widgets Not Loading for Client
+
+This is most likely caused by a missing or incorrect game mapping.
+Resolution Video: https://app.screencast.com/9XpWoQBdRvTrd
+
+
+# 6. TRADING
+
+## 6.1 Soccer: Missing Goal or Card Prices
+
+We have two sources: OAM and OddsChecker (OC).
+
+- OddsChecker is typically first available. Check their site to see if player goal odds are live.
+- If odds are on OC but not in our backend: notify Jason (tech issue).
+- If OC doesn't have odds and we don't either: OAM also doesn't have them. Manual entry may be required.
+- If the League box is light blue in the Soccer Projection Report, prices are coming from OddsChecker.
+  Soccer Projection Report: https://tt-us-x234525.digitalsportstech.com/#!/soccer-projections-system/soccer-projections
+
+## 6.2 NFL and NCAAF First Touchdown Settlement
+
+Use the Pending Market Report to grade this market. Found at Custom Markets > Pending.
+URL: https://tt-us-x234525.digitalsportstech.com/#!/custom-markets/pending
+
+NFL Source: https://nflgsis.com (username: media, password: media)
+NCAAF Source: Home or away team's official website — wait for official boxscore on schedule page.
+
+Settlement rules:
+- If a listed player scores first: win that player, lose all other listed players who played.
+- If a listed player did not play: void that player.
+- If a player added after the initial market was created scores first:
+  - Grade players who played as Won/Loss.
+  - Grade players who did not play as Void.
+  - System auto-voids bets placed before the scorer was added; bets placed after follow standard grading.
+
+## 6.3 NBA First Point Scorer Settlement
+
+Use the Pending Market Report to grade this market. Found at Custom Markets > Pending.
+URL: https://tt-us-x234525.digitalsportstech.com/#!/custom-markets/pending
+
+Settlement rules:
+- If a listed player scores first: win that player, lose all other starters.
+- Listed players who didn't start: void.
+- If an unlisted player scores first: void all players.
+- If a player added after the initial market was created scores first:
+  - Grade players who started as Won/Loss.
+  - Grade non-starters as Void.
+  - System auto-voids bets placed before the scorer was added.
+
+## 6.4 NBA Double Double Adjustments
+
+- Price sourced from comps.
+- First, turn off auto trading in the comps screen.
+- Then adjust the price in Pending Market Report.
+  URL: https://tt-us-x234525.digitalsportstech.com/#!/custom-markets/pending
+
+## 6.5 Comps Missing
+
+We take a comps feed from OddsJam. If the comps screen is blank or missing markets:
+
+1. Log in to OddsJam: https://oddsjam.com/mlb/screen/moneyline
+   Email: traders@digitalsportstech.com (check email for login code)
+2. If comps are missing from OJ: issue is on their end. Email: clients@oddsjam.com
+3. If OJ has comps but we don't: notify Jason / Matt / Ari to contact tech.
+4. If comps are in the Comps Screen but not in the O/U report: notify Jason / Matt / Ari — tech issue.
+
+## 6.6 Comps Lagging
+
+If comps prices appear out of date or the AT toggle isn't working (lagging):
+
+1. Reset the scraper via the button in the comps screen.
+2. Email Nix Admins:
+   To: admins@nixsolutions.com
+   Subject: URGENT
+   Body: Please restart app on server 'prod-nba-scraper' (IP: 188.214.129.76). Command: pm2 restart all from user 'webdata'.
+
+## 6.7 Players Missing from ORR
+
+Players returning from injury may be slow to update to active status due to periodic roster parsing.
+
+1. Access Global SLTPG Settings in Nix backend.
+   URL: https://backend.digitalsportstech.com/global-sltpg
+2. Select Sport, League, then check 'Select Team' and choose the team.
+3. Locate the player using the Name filter.
+4. Double-click the Is Active cell and select Y from the dropdown.
+5. If 'Is Hidden' is checked, uncheck it.
+6. Click Update at the bottom to save changes.
+
+## 6.8 DFeX Markets Not Appearing (Pre-built Accas)
+
+If DFeX markets are delayed on our frontend, try restarting the service:
+1. Go to DFX Scheduler Report in TT.
+   URL: https://tt-us-x234525.digitalsportstech.com/#!/dfx-scheduler
+2. Click the Restart icon (top right).
+3. If this doesn't work, contact tech support or notify Jason or Matt.
+
+## 6.9 Market Release Schedule
+
+NFL: Tuesday (TNF); Wed/Thu for weekend & MNF games
+NBA / NHL: Overnight US time (~1am-3am ET day of game). Some delayed to afternoon for injury clarity.
+MLB: 9:00-9:30am ET, day of game
+WNBA: 9:00-9:30am ET, day of game
+NCAAF: Ranked games 24-48 hrs before kick-off. Smaller games: morning of game.
+NCAAB: 9:00-11:00am ET, day of game
+Soccer Tier 1 (EPL, La Liga, DFL, Serie A, UCL, Major Tournaments): 48-96 hours before kick-off
+Soccer Tier 2: 24-48 hours before kick-off
+Euroleague Basketball: 24-48 hours before tip-off
+
+## 6.10 Change a Player's Position
+
+1. Go to Global SLTPG Settings: https://backend.digitalsportstech.com/global-sltpg
+2. Choose Sport, League, and select by team.
+3. Filter by the player's name, click their position, and click Update.
+
+## 6.11 Betslip Error: Provider Data Missing for SGM Non-Player
+
+Go to PL Report and click the blue Push button. If not resolved, notify tech support.
+PL Report: https://tt-us-x234525.digitalsportstech.com/#!/ttv2/pl
+
+
+# 7. GRADING
+
+## 7.1 Longest Rush / Pass / Reception Markets
+
+- Grade Over or Under if the player participates in the game, using official boxscore data.
+- If a player has no pass/rush/reception attempt: grade as a LOSS (not void).
+- If the player does not play at all: grade as VOID.
+
+
+# 8. OTHER
+
+## 8.1 Feed Providers
+
+US Sports:
+- Game Market Settlement: OAM
+- Player Market Settlement: Sportradar
+- Game Odds: OAM
+- Fixtures: Sportradar
+- Comps: OddsJam
+
+Soccer:
+- Game Market Settlement: OAM
+- Player Market Settlement: DSG (DataSportsGroup) — Sportradar provides player started status only, all scores from DSG
+- Game Odds: OAM
+- Fixtures: Sportradar
+- Comps: OddsJam
+- Soccer Goals/Cards: OAM primary, OddsChecker scraped as backup
+
+Provider Contacts:
+- Sportradar: support@sportradar.com | Slack
+- DSG (DataSportsGroup): support@datasportsgroup.com
+- OddsJam: clients@oddsjam.com
+- OAM: Skype | support@oddsandmore.atlassian.net
+
+## 8.2 Settlement Rules and FAQ
+
+Reference internally when unsure on market rules. Can also be sent to clients requesting our rules/FAQ.
+URL: https://docs.google.com/document/d/1UMYvOeBzRgZhpvcOmUv0QmFp6IgjZdGGFf9HwqAe9Fo/edit
+
+## 8.3 Live Stream Feed Connection Error
+
+If the Sportradar Live Stream connection (in-play data) fails, an alert email will arrive at support.
+
+When this occurs, send this email:
+To: admins@nixsolutions.com
+CC: support@digitalsportstech.com; traders@digitalsportstech.com
+Subject: URGENT
+Body: Please restart PM2 process PROD-PUSH-PARSER on IPM-PROD server (54.88.166.233). Once restarted, check PM2 logs of that process to confirm it started successfully.
+
+## 8.4 Issue Escalation: Unknown How to Resolve
+
+- Looks like a tech issue? Post in Slack #tech_issues channel.
+- If Jason / Matt / Ari are working: alert them in Slack.
+- If they are not working: post in #tech_issues and tag Jason (US daytime) or Ari (AU daytime).
+
+Additional Notes:
+- If unable to adjust a line from O/U report or unable to untick AT on a specific market: try trading/unticking directly from comps screen if a comp is still available. Use ORR as a last resort. Notify in #tech_issues.
+- Soccer game missing Home/Away Odds: likely a mapping issue. In Games Manager (PL), check the league. If unmapped, two lines appear with the same game — one with a Game ID, one with a Map button. Click Map and paste the Game ID from the other line. If game is correctly mapped and no duplicate showing, notify Matt / Jason / Ari for tech escalation.
+
+Customer Service Guidelines: https://docs.google.com/document/d/1na2PxVTM61GFc_H8JJmkYvSqF03HmmPVCg-HvsYOmUU/edit
