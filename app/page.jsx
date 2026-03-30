@@ -15,17 +15,94 @@ const SUGGESTED = [
 
 function TypingDots() {
   return (
-    <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '4px 0' }}>
+    <div style={{ display: 'flex', gap: 5, alignItems: 'center', padding: '6px 2px' }}>
       {[0, 1, 2].map(i => (
         <span key={i} style={{
-          width: 6, height: 6, borderRadius: '50%',
-          background: 'var(--accent)',
-          animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
+          width: 7, height: 7, borderRadius: '50%',
+          background: 'var(--teal)',
           display: 'block',
+          animation: `pulse 1.2s ease-in-out ${i * 0.18}s infinite`,
         }} />
       ))}
     </div>
   )
+}
+
+function renderInline(text) {
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} style={{ color: 'var(--navy)', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} style={{
+        fontFamily: 'var(--font-mono)', fontSize: 12,
+        background: 'var(--teal-mid)', color: 'var(--teal)',
+        padding: '1px 6px', borderRadius: 4,
+      }}>{part.slice(1, -1)}</code>
+    }
+    return part
+  })
+}
+
+function MessageContent({ content }) {
+  const lines = content.split('\n')
+  const elements = []
+  let i = 0
+  while (i < lines.length) {
+    const line = lines[i]
+    if (!line.trim()) { i++; continue }
+    if (line.startsWith('### ')) {
+      elements.push(
+        <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 16, marginBottom: 6, fontWeight: 500 }}>
+          {line.slice(4)}
+        </div>
+      )
+    } else if (line.startsWith('## ')) {
+      elements.push(
+        <div key={i} style={{ fontSize: 15, fontWeight: 700, color: 'var(--navy)', marginTop: 16, marginBottom: 6 }}>
+          {line.slice(3)}
+        </div>
+      )
+    } else if (line.match(/^\d+\. /)) {
+      const num = line.match(/^(\d+)/)?.[1]
+      const text = line.replace(/^\d+\. /, '')
+      elements.push(
+        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, alignItems: 'flex-start' }}>
+          <span style={{
+            minWidth: 22, height: 22, borderRadius: '50%',
+            background: 'var(--teal)', color: '#fff',
+            fontSize: 11, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginTop: 1, flexShrink: 0,
+          }}>{num}</span>
+          <span style={{ paddingTop: 2 }}>{renderInline(text)}</span>
+        </div>
+      )
+    } else if (line.startsWith('- ') || line.startsWith('• ')) {
+      elements.push(
+        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 5, alignItems: 'flex-start' }}>
+          <span style={{ color: 'var(--teal)', fontSize: 16, lineHeight: 1.4, flexShrink: 0, marginTop: 1 }}>›</span>
+          <span>{renderInline(line.slice(2))}</span>
+        </div>
+      )
+    } else if (line.startsWith('> ')) {
+      elements.push(
+        <div key={i} style={{
+          borderLeft: '3px solid var(--teal)', paddingLeft: 12,
+          marginBottom: 8, color: 'var(--text-2)', fontStyle: 'italic', fontSize: 13,
+          background: 'var(--teal-light)', padding: '8px 12px',
+          borderRadius: '0 6px 6px 0',
+        }}>
+          {line.slice(2)}
+        </div>
+      )
+    } else {
+      elements.push(<p key={i} style={{ marginBottom: 6, color: 'var(--text-1)' }}>{renderInline(line)}</p>)
+    }
+    i++
+  }
+  return <>{elements}</>
 }
 
 function Message({ msg, isLatest }) {
@@ -36,32 +113,33 @@ function Message({ msg, isLatest }) {
       flexDirection: isUser ? 'row-reverse' : 'row',
       gap: 12,
       alignItems: 'flex-start',
-      padding: '0 24px',
-      marginBottom: 24,
+      padding: '0 28px',
+      marginBottom: 20,
     }}>
       {/* Avatar */}
       <div style={{
-        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 700,
-        background: isUser ? 'var(--user-bubble)' : 'var(--accent-dim)',
-        border: `1px solid ${isUser ? 'var(--border-mid)' : 'rgba(0,200,190,0.3)'}`,
-        color: isUser ? 'var(--text-2)' : 'var(--accent)',
-        marginTop: 2,
+        fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600,
+        background: isUser ? 'var(--navy)' : 'var(--teal)',
+        color: '#fff',
+        boxShadow: isUser ? '0 2px 8px rgba(27,42,74,0.25)' : '0 2px 8px rgba(14,124,134,0.25)',
+        marginTop: 2, letterSpacing: '0.03em',
       }}>
         {isUser ? 'YOU' : 'AI'}
       </div>
 
       {/* Bubble */}
       <div style={{
-        maxWidth: '72%',
-        background: isUser ? 'var(--user-bubble)' : 'var(--bg-panel)',
-        border: `1px solid ${isUser ? 'var(--border-mid)' : 'var(--border)'}`,
-        borderRadius: isUser ? '12px 4px 12px 12px' : '4px 12px 12px 12px',
-        padding: '12px 16px',
+        maxWidth: '74%',
+        background: isUser ? 'var(--navy)' : 'var(--bg-white)',
+        border: `1px solid ${isUser ? 'transparent' : 'var(--border)'}`,
+        borderRadius: isUser ? '14px 4px 14px 14px' : '4px 14px 14px 14px',
+        padding: '13px 17px',
         lineHeight: 1.7,
         fontSize: 14,
-        color: 'var(--text-1)',
+        color: isUser ? '#fff' : 'var(--text-1)',
+        boxShadow: 'var(--shadow-sm)',
       }}>
         {msg.role === 'assistant' && msg.content === '' ? (
           <TypingDots />
@@ -71,20 +149,20 @@ function Message({ msg, isLatest }) {
 
         {msg.sources && msg.sources.length > 0 && (
           <div style={{
-            marginTop: 12,
-            paddingTop: 10,
+            marginTop: 14,
+            paddingTop: 12,
             borderTop: '1px solid var(--border)',
           }}>
-            <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', marginBottom: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', marginBottom: 7, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Source Sections
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {msg.sources.map((s, i) => (
                 <span key={i} style={{
                   fontSize: 11, fontFamily: 'var(--font-mono)',
-                  background: 'var(--accent-glow)', color: 'var(--accent)',
-                  border: '1px solid rgba(0,200,190,0.2)',
-                  borderRadius: 4, padding: '2px 8px',
+                  background: 'var(--teal-light)', color: 'var(--teal)',
+                  border: '1px solid rgba(14,124,134,0.2)',
+                  borderRadius: 5, padding: '2px 8px',
                 }}>
                   {s}
                 </span>
@@ -97,69 +175,10 @@ function Message({ msg, isLatest }) {
   )
 }
 
-function MessageContent({ content }) {
-  // Basic markdown-lite rendering
-  const lines = content.split('\n')
-  const elements = []
-  let i = 0
-
-  while (i < lines.length) {
-    const line = lines[i]
-    if (!line.trim()) { i++; continue }
-
-    if (line.startsWith('### ')) {
-      elements.push(<div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 12, marginBottom: 4 }}>{line.slice(4)}</div>)
-    } else if (line.startsWith('## ')) {
-      elements.push(<div key={i} style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-1)', marginTop: 12, marginBottom: 4 }}>{line.slice(3)}</div>)
-    } else if (line.match(/^\d+\. /)) {
-      const text = line.replace(/^\d+\. /, '').replace(/\*\*(.*?)\*\*/g, '$1')
-      const num = line.match(/^(\d+)/)?.[1]
-      elements.push(
-        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 4, paddingLeft: 4 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--accent)', minWidth: 20, marginTop: 2 }}>{num}.</span>
-          <span>{renderInline(text)}</span>
-        </div>
-      )
-    } else if (line.startsWith('- ') || line.startsWith('• ')) {
-      const text = line.slice(2).replace(/\*\*(.*?)\*\*/g, '$1')
-      elements.push(
-        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 4, paddingLeft: 4 }}>
-          <span style={{ color: 'var(--accent)', marginTop: 2 }}>›</span>
-          <span>{renderInline(text)}</span>
-        </div>
-      )
-    } else if (line.startsWith('> ')) {
-      elements.push(
-        <div key={i} style={{ borderLeft: '2px solid var(--accent)', paddingLeft: 10, marginBottom: 8, color: 'var(--text-2)', fontStyle: 'italic', fontSize: 13 }}>
-          {line.slice(2)}
-        </div>
-      )
-    } else {
-      elements.push(<p key={i} style={{ marginBottom: 6 }}>{renderInline(line)}</p>)
-    }
-    i++
-  }
-  return <>{elements}</>
-}
-
-function renderInline(text) {
-  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g)
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} style={{ color: 'var(--text-1)', fontWeight: 600 }}>{part.slice(2, -2)}</strong>
-    }
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return <code key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'rgba(0,200,190,0.1)', color: 'var(--accent)', padding: '1px 5px', borderRadius: 3 }}>{part.slice(1, -1)}</code>
-    }
-    return part
-  })
-}
-
 export default function ChatPage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showSuggested, setShowSuggested] = useState(true)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -170,14 +189,11 @@ export default function ChatPage() {
   async function send(text) {
     const query = text || input.trim()
     if (!query || loading) return
-
     setInput('')
-    setShowSuggested(false)
     setLoading(true)
-
     const userMsg = { role: 'user', content: query }
-    const placeholderMsg = { role: 'assistant', content: '', sources: [] }
-    setMessages(prev => [...prev, userMsg, placeholderMsg])
+    const placeholder = { role: 'assistant', content: '', sources: [] }
+    setMessages(prev => [...prev, userMsg, placeholder])
 
     try {
       const res = await fetch('/api/chat', {
@@ -185,7 +201,6 @@ export default function ChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: query, history: messages }),
       })
-
       if (!res.ok) throw new Error('Request failed')
 
       const reader = res.body.getReader()
@@ -196,11 +211,8 @@ export default function ChatPage() {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-
         const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
+        for (const line of chunk.split('\n')) {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6))
@@ -213,24 +225,15 @@ export default function ChatPage() {
                 })
               } else if (data.type === 'sources') {
                 sources = data.sources
-                setMessages(prev => {
-                  const updated = [...prev]
-                  updated[updated.length - 1] = { ...updated[updated.length - 1], sources }
-                  return updated
-                })
               }
             } catch {}
           }
         }
       }
-    } catch (err) {
+    } catch {
       setMessages(prev => {
         const updated = [...prev]
-        updated[updated.length - 1] = {
-          role: 'assistant',
-          content: 'Something went wrong. Please try again or check the manual directly.',
-          sources: [],
-        }
+        updated[updated.length - 1] = { role: 'assistant', content: 'Something went wrong. Please try again.', sources: [] }
         return updated
       })
     } finally {
@@ -240,120 +243,110 @@ export default function ChatPage() {
   }
 
   function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      send()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
   const isEmpty = messages.length === 0
 
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      background: 'var(--bg)',
-      overflow: 'hidden',
-    }}>
-      {/* ── Sidebar ───────────────────────────────────────────── */}
+    <div style={{ display: 'flex', height: '100vh', background: 'var(--bg)', overflow: 'hidden' }}>
+
+      {/* ── Sidebar ─────────────────────────────────────────── */}
       <div style={{
-        width: 260,
+        width: 272,
         flexShrink: 0,
-        background: 'var(--bg-panel)',
+        background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
-        padding: '0 0 20px',
-        overflow: 'hidden',
+        boxShadow: '2px 0 12px rgba(0,0,0,0.04)',
       }}>
-        {/* Logo */}
+        {/* Brand header */}
         <div style={{
-          padding: '20px 20px 16px',
-          borderBottom: '1px solid var(--border)',
+          padding: '22px 20px 18px',
+          background: 'var(--navy)',
         }}>
           <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--accent)',
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            marginBottom: 4,
+            fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.5)',
+            letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6,
           }}>
-            ◈ DST TRADING
+            Digital Sports Tech
           </div>
           <div style={{
-            fontSize: 15,
+            fontSize: 19,
             fontWeight: 700,
-            color: 'var(--text-1)',
+            color: '#fff',
             lineHeight: 1.3,
+            fontFamily: 'var(--font-body)',
           }}>
-            Operations<br />Assistant
+            Trading Operations<br />
+            <span style={{ color: 'rgba(14,200,190,0.9)', fontWeight: 400, fontSize: 16 }}>Assistant</span>
           </div>
         </div>
 
-        {/* Status */}
-        <div style={{
-          margin: '12px 16px',
-          padding: '8px 12px',
-          background: 'var(--accent-glow)',
-          border: '1px solid rgba(0,200,190,0.2)',
-          borderRadius: 6,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', flexShrink: 0, boxShadow: '0 0 6px var(--accent)' }} />
-          <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--accent)' }}>ONLINE</span>
-          <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>v1.0</span>
+        {/* Status pill */}
+        <div style={{ padding: '12px 16px 0' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 12px',
+            background: '#F0FAF0',
+            border: '1px solid #B8E6B8',
+            borderRadius: 8,
+          }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2ECC71', flexShrink: 0, boxShadow: '0 0 0 2px rgba(46,204,113,0.2)' }} />
+            <span style={{ fontSize: 12, color: '#1A6B3A', fontWeight: 600 }}>Online & Ready</span>
+            <span style={{ fontSize: 11, color: '#888', marginLeft: 'auto', fontFamily: 'var(--font-mono)' }}>v1.0</span>
+          </div>
         </div>
 
         {/* Knowledge base */}
-        <div style={{ padding: '0 16px', marginBottom: 12 }}>
+        <div style={{ padding: '14px 16px 0' }}>
           <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
             Knowledge Base
           </div>
           <div style={{
-            padding: '8px 10px',
-            background: 'var(--bg-raised)',
-            border: '1px solid var(--border)',
-            borderRadius: 6,
-            fontSize: 12,
-            color: 'var(--text-2)',
+            padding: '10px 12px',
+            background: 'var(--teal-light)',
+            border: '1px solid rgba(14,124,134,0.2)',
+            borderRadius: 8,
+            fontSize: 13,
+            color: 'var(--teal)',
             display: 'flex',
             alignItems: 'center',
             gap: 8,
+            fontWeight: 500,
           }}>
-            <span style={{ color: 'var(--accent)', fontSize: 14 }}>📄</span>
+            <span style={{ fontSize: 15 }}>📋</span>
             Traders Operational Manual
           </div>
         </div>
 
-        {/* Divider */}
-        <div style={{ height: 1, background: 'var(--border)', margin: '0 16px 12px' }} />
+        <div style={{ height: 1, background: 'var(--border)', margin: '14px 16px' }} />
 
-        {/* Suggested questions */}
-        <div style={{ padding: '0 16px', flex: 1, overflow: 'auto' }}>
-          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
-            Quick Questions
+        {/* Quick questions */}
+        <div style={{ padding: '0 16px', flex: 1, overflowY: 'auto' }}>
+          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Common Questions
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {SUGGESTED.map((q, i) => (
               <button key={i} onClick={() => send(q)} style={{
                 background: 'none',
                 border: '1px solid var(--border)',
-                borderRadius: 6,
-                padding: '7px 10px',
-                fontSize: 12,
+                borderRadius: 8,
+                padding: '8px 11px',
+                fontSize: 12.5,
                 color: 'var(--text-2)',
                 textAlign: 'left',
                 cursor: 'pointer',
-                lineHeight: 1.4,
+                lineHeight: 1.45,
                 transition: 'all 0.15s',
+                fontFamily: 'var(--font-body)',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'var(--accent-dim)'
-                e.currentTarget.style.color = 'var(--accent)'
-                e.currentTarget.style.borderColor = 'rgba(0,200,190,0.3)'
+                e.currentTarget.style.background = 'var(--teal-light)'
+                e.currentTarget.style.color = 'var(--teal)'
+                e.currentTarget.style.borderColor = 'rgba(14,124,134,0.3)'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'none'
@@ -366,106 +359,98 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: '12px 16px 0', borderTop: '1px solid var(--border)', marginTop: 8 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.5 }}>
-            Always verify in live reports.<br />
-            Escalate to Jason · Matt · Ari.
+        {/* Footer note */}
+        <div style={{
+          padding: '12px 16px',
+          borderTop: '1px solid var(--border)',
+          background: 'var(--amber-light)',
+        }}>
+          <div style={{ fontSize: 11.5, color: 'var(--amber)', lineHeight: 1.55, fontWeight: 500 }}>
+            ⚠️ Always verify critical steps in live reports. Escalate to Jason · Matt · Ari.
           </div>
         </div>
       </div>
 
-      {/* ── Main Chat Area ──────────────────────────────────────── */}
+      {/* ── Main area ──────────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Top bar */}
         <div style={{
-          padding: '0 24px',
-          height: 52,
+          padding: '0 28px',
+          height: 54,
           borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-white)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           flexShrink: 0,
-          background: 'var(--bg-panel)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-2)' }}>
-              Ask anything about trading procedures
-            </span>
+          <div style={{ fontSize: 13.5, color: 'var(--text-2)', fontWeight: 500 }}>
+            Ask any question about settlement, regrading, client issues, or trading procedures
           </div>
           <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--text-3)',
-            display: 'flex',
-            gap: 16,
+            display: 'flex', gap: 6, alignItems: 'center',
           }}>
-            <span>Claude Sonnet</span>
-            <span style={{ color: 'var(--border-mid)' }}>|</span>
-            <span>RAG · pgvector</span>
+            <span style={{
+              fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-3)',
+              background: 'var(--bg)', border: '1px solid var(--border)',
+              padding: '3px 9px', borderRadius: 20,
+            }}>Claude Sonnet · RAG</span>
           </div>
         </div>
 
         {/* Messages */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '28px 0 0',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+        <div style={{ flex: 1, overflowY: 'auto', paddingTop: 28 }}>
           {isEmpty ? (
             <div style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0 40px',
-              textAlign: 'center',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              justifyContent: 'center', height: '100%',
+              padding: '0 40px', textAlign: 'center',
             }}>
               <div style={{
-                width: 64, height: 64, borderRadius: 16,
-                background: 'var(--accent-dim)',
-                border: '1px solid rgba(0,200,190,0.3)',
+                width: 68, height: 68, borderRadius: 20,
+                background: 'var(--navy)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 28, marginBottom: 20,
+                fontSize: 30, marginBottom: 20,
+                boxShadow: '0 8px 24px rgba(27,42,74,0.2)',
               }}>
-                ◈
+                🎯
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-1)', marginBottom: 10 }}>
-                Trader Operations Assistant
+              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--navy)', marginBottom: 10, fontFamily: 'var(--font-body)' }}>
+                How can I help?
               </div>
-              <div style={{ fontSize: 14, color: 'var(--text-2)', maxWidth: 420, lineHeight: 1.7 }}>
-                Ask any question about settlement, regrading, voiding, client issues, or trading procedures. I&apos;ll find the right answer from the manual.
+              <div style={{ fontSize: 14.5, color: 'var(--text-2)', maxWidth: 440, lineHeight: 1.75, marginBottom: 32 }}>
+                Ask me anything from the Traders Operational Manual — settlement, regrading, client issues, voiding, or trading procedures.
               </div>
-              <div style={{
-                marginTop: 24, display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 560,
-              }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 580 }}>
                 {SUGGESTED.slice(0, 4).map((q, i) => (
                   <button key={i} onClick={() => send(q)} style={{
-                    background: 'var(--bg-panel)',
+                    background: 'var(--bg-white)',
                     border: '1px solid var(--border)',
-                    borderRadius: 8,
-                    padding: '8px 14px',
-                    fontSize: 12,
+                    borderRadius: 10,
+                    padding: '10px 16px',
+                    fontSize: 13,
                     color: 'var(--text-2)',
                     cursor: 'pointer',
                     transition: 'all 0.15s',
                     maxWidth: 260,
                     textAlign: 'left',
-                    lineHeight: 1.4,
+                    lineHeight: 1.45,
+                    fontFamily: 'var(--font-body)',
+                    boxShadow: 'var(--shadow-sm)',
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = 'var(--accent-dim)'
-                    e.currentTarget.style.color = 'var(--accent)'
-                    e.currentTarget.style.borderColor = 'rgba(0,200,190,0.3)'
+                    e.currentTarget.style.background = 'var(--teal-light)'
+                    e.currentTarget.style.color = 'var(--teal)'
+                    e.currentTarget.style.borderColor = 'rgba(14,124,134,0.3)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(14,124,134,0.15)'
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = 'var(--bg-panel)'
+                    e.currentTarget.style.background = 'var(--bg-white)'
                     e.currentTarget.style.color = 'var(--text-2)'
                     e.currentTarget.style.borderColor = 'var(--border)'
+                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
                   }}>
                     {q}
                   </button>
@@ -473,32 +458,37 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            <>
-              {messages.map((msg, i) => (
-                <Message key={i} msg={msg} isLatest={i === messages.length - 1 && msg.role === 'assistant'} />
-              ))}
-            </>
+            messages.map((msg, i) => (
+              <Message key={i} msg={msg} isLatest={i === messages.length - 1 && msg.role === 'assistant'} />
+            ))
           )}
-          <div ref={bottomRef} style={{ height: 20 }} />
+          <div ref={bottomRef} style={{ height: 24 }} />
         </div>
 
-        {/* Input */}
+        {/* Input bar */}
         <div style={{
-          padding: '16px 24px 20px',
+          padding: '14px 24px 18px',
           borderTop: '1px solid var(--border)',
-          background: 'var(--bg-panel)',
+          background: 'var(--bg-white)',
           flexShrink: 0,
+          boxShadow: '0 -2px 12px rgba(0,0,0,0.04)',
         }}>
           <div style={{
-            display: 'flex',
-            gap: 10,
-            background: 'var(--bg-input)',
-            border: '1px solid var(--border-mid)',
-            borderRadius: 10,
-            padding: '4px 4px 4px 16px',
-            transition: 'border-color 0.2s',
+            display: 'flex', gap: 10,
+            background: 'var(--bg)',
+            border: '1.5px solid var(--border-mid)',
+            borderRadius: 12,
+            padding: '6px 6px 6px 18px',
+            transition: 'border-color 0.2s, box-shadow 0.2s',
           }}
-          onFocus={() => {}}
+          onFocusCapture={e => {
+            e.currentTarget.style.borderColor = 'var(--teal)'
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(14,124,134,0.1)'
+          }}
+          onBlurCapture={e => {
+            e.currentTarget.style.borderColor = 'var(--border-mid)'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
           >
             <textarea
               ref={inputRef}
@@ -506,7 +496,7 @@ export default function ChatPage() {
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
               disabled={loading}
-              placeholder="Ask about any trading procedure, settlement issue, or client problem…"
+              placeholder="Type your question about any trading procedure…"
               rows={1}
               style={{
                 flex: 1,
@@ -515,7 +505,7 @@ export default function ChatPage() {
                 outline: 'none',
                 color: 'var(--text-1)',
                 fontSize: 14,
-                fontFamily: 'var(--font-sans)',
+                fontFamily: 'var(--font-body)',
                 resize: 'none',
                 padding: '8px 0',
                 lineHeight: 1.5,
@@ -531,23 +521,30 @@ export default function ChatPage() {
               onClick={() => send()}
               disabled={!input.trim() || loading}
               style={{
-                width: 38, height: 38,
-                borderRadius: 7,
+                width: 40, height: 40,
+                borderRadius: 9,
                 border: 'none',
-                background: (!input.trim() || loading) ? 'var(--bg-raised)' : 'var(--accent)',
-                color: (!input.trim() || loading) ? 'var(--text-3)' : '#000',
+                background: (!input.trim() || loading) ? 'var(--border)' : 'var(--navy)',
+                color: (!input.trim() || loading) ? 'var(--text-3)' : '#fff',
                 cursor: (!input.trim() || loading) ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16,
+                fontSize: 17,
                 flexShrink: 0,
                 alignSelf: 'flex-end',
                 marginBottom: 2,
                 transition: 'all 0.15s',
+                boxShadow: (!input.trim() || loading) ? 'none' : '0 2px 8px rgba(27,42,74,0.3)',
+              }}
+              onMouseEnter={e => {
+                if (!(!input.trim() || loading)) e.currentTarget.style.background = 'var(--teal)'
+              }}
+              onMouseLeave={e => {
+                if (!(!input.trim() || loading)) e.currentTarget.style.background = 'var(--navy)'
               }}
             >
               {loading ? (
                 <span style={{
-                  width: 14, height: 14, borderRadius: '50%',
+                  width: 16, height: 16, borderRadius: '50%',
                   border: '2px solid var(--text-3)',
                   borderTopColor: 'transparent',
                   display: 'block',
@@ -557,7 +554,7 @@ export default function ChatPage() {
             </button>
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 8, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
-            Enter to send · Shift+Enter for new line · Always verify critical steps in live reports
+            Enter to send · Shift+Enter for new line
           </div>
         </div>
       </div>
