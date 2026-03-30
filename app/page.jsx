@@ -52,6 +52,31 @@ function MessageContent({ content }) {
   while (i < lines.length) {
     const line = lines[i]
     if (!line.trim()) { i++; continue }
+
+    // Inline image from RAG context
+    const imageMatch = line.match(/\[IMAGE:(https?:\/\/[^\]]+)\]/)
+    if (imageMatch) {
+      elements.push(
+        <div key={i} style={{ margin: '12px 0' }}>
+          <img
+            src={imageMatch[1]}
+            alt="Reference screenshot"
+            style={{
+              maxWidth: '100%', borderRadius: 8,
+              border: '1px solid var(--border)',
+              boxShadow: 'var(--shadow-sm)',
+              display: 'block',
+            }}
+            onError={e => { e.currentTarget.style.display = 'none' }}
+          />
+          <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 4, fontFamily: 'var(--font-mono)' }}>
+            Reference screenshot
+          </div>
+        </div>
+      )
+      i++; continue
+    }
+
     if (line.startsWith('### ')) {
       elements.push(
         <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 16, marginBottom: 6, fontWeight: 500 }}>
