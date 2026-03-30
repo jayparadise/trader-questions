@@ -141,13 +141,12 @@ async function main() {
   console.log('✓ Cleared')
 
   const allChunks = []
-  for (const file of files) {
-    const filePath = file
-    const file = filePath; console.log(`\nParsing: ${path.relative(DOCS_DIR, filePath)}`)
-    const text = file.endsWith('.html')
-      ? await parseHtmlDoc(filePath, file.replace('.html', '').toLowerCase().replace(/\s+/g, '-'))
+  for (const filePath of files) {
+    console.log(`\nParsing: ${path.relative(DOCS_DIR, filePath)}`)
+    const text = filePath.endsWith('.html')
+      ? await parseHtmlDoc(filePath, path.basename(filePath, '.html').toLowerCase().replace(/\s+/g, '-'))
       : parseTxtDoc(filePath)
-    const chunks = chunkDocument(text, file)
+    const chunks = chunkDocument(text, path.relative(DOCS_DIR, filePath))
     const imgCount = (text.match(/\[IMAGE:/g) || []).length
     console.log(`  ${chunks.length} chunks, ${imgCount} images embedded`)
     allChunks.push(...chunks)
