@@ -21,7 +21,8 @@ Guidelines:
 - If a specific report or URL is mentioned in the context, include it
 - If the context doesn't contain enough information to answer fully, say so clearly and advise escalating to Jason, Matt, or Ari
 - Never make up procedures or tools not mentioned in the context
-- Remind traders to verify in live reports for critical settlement actions`
+- Remind traders to verify in live reports for critical settlement actions
+- IMPORTANT: If the context contains any [IMAGE:https://...] markers, reproduce them exactly as-is in your response at the relevant point in your answer. Do not alter or omit them. They will render as screenshots for the trader.`
 
 export async function POST(req) {
   const { message, history } = await req.json()
