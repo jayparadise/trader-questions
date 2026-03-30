@@ -32,7 +32,7 @@ function renderInline(text) {
   const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g)
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} style={{ color: 'var(--navy)', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+      return <strong key={i} style={{ fontWeight: 700 }}>{part.slice(2, -2)}</strong>
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return <code key={i} style={{
@@ -98,7 +98,7 @@ function MessageContent({ content }) {
         </div>
       )
     } else {
-      elements.push(<p key={i} style={{ marginBottom: 6, color: 'var(--text-1)' }}>{renderInline(line)}</p>)
+      elements.push(<p key={i} style={{ marginBottom: 6 }}>{renderInline(line)}</p>)
     }
     i++
   }
@@ -359,16 +359,7 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Footer note */}
-        <div style={{
-          padding: '12px 16px',
-          borderTop: '1px solid var(--border)',
-          background: 'var(--amber-light)',
-        }}>
-          <div style={{ fontSize: 11.5, color: 'var(--amber)', lineHeight: 1.55, fontWeight: 500 }}>
-            ⚠️ Always verify critical steps in live reports. Escalate to Jason · Matt · Ari.
-          </div>
-        </div>
+
       </div>
 
       {/* ── Main area ──────────────────────────────────────────── */}
