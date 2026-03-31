@@ -2,15 +2,42 @@
 
 import { useState, useRef, useEffect } from 'react'
 
-const SUGGESTED = [
-  'What do I do if a soccer match is suspended mid-game?',
-  'How do I regrade a single bet for a client?',
-  'Walk me through the MLB postponed game void process.',
-  'What steps do I take when player markets haven\'t settled?',
-  'How do I handle a client reporting missing settlements?',
-  'What do I do if comps are lagging or missing?',
-  'How do I check why a user is hitting risk limits?',
-  'What is the market release schedule for NBA games?',
+const QUESTION_SECTIONS = [
+  {
+    label: 'Trading & Settlement',
+    emoji: '📊',
+    questions: [
+      'What do I do if a soccer match is suspended mid-game?',
+      'How do I regrade a single bet for a client?',
+      'What steps do I take when player markets haven\'t settled?',
+      'How do I manually settle game markets for an event?',
+      'What do I do if comps are lagging or missing?',
+      'What is the market release schedule for NBA games?',
+    ],
+  },
+  {
+    label: 'Client Issues',
+    emoji: '🤝',
+    questions: [
+      'How do I handle a client reporting missing settlements?',
+      'A client bet is still pending on their side — what do I do?',
+      'How do I check why a user is hitting risk limits?',
+      'A data feed client says they are missing markets — how do I fix it?',
+      'A client is getting error messages on bet placement — what do I check?',
+      'Widgets are not loading for a client — what is the fix?',
+    ],
+  },
+  {
+    label: 'MLB Setup',
+    emoji: '⚾',
+    questions: [
+      'Walk me through the MLB daily setup process.',
+      'How do I handle a doubleheader in MLB setup?',
+      'What do I do if an MLB game is postponed?',
+      'How do I handle a suspended MLB game being resumed the next day?',
+      'What do I do after turning on auto trading for MLB?',
+    ],
+  },
 ]
 
 function TypingDots() {
@@ -172,29 +199,6 @@ function Message({ msg, isLatest }) {
           <MessageContent content={msg.content} />
         )}
 
-        {msg.sources && msg.sources.length > 0 && (
-          <div style={{
-            marginTop: 14,
-            paddingTop: 12,
-            borderTop: '1px solid var(--border)',
-          }}>
-            <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', marginBottom: 7, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              Source Sections
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-              {msg.sources.map((s, i) => (
-                <span key={i} style={{
-                  fontSize: 11, fontFamily: 'var(--font-mono)',
-                  background: 'var(--teal-light)', color: 'var(--teal)',
-                  border: '1px solid rgba(14,124,134,0.2)',
-                  borderRadius: 5, padding: '2px 8px',
-                }}>
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
@@ -280,108 +284,111 @@ export default function ChatPage() {
       <div style={{
         width: 272,
         flexShrink: 0,
-        background: 'var(--bg-sidebar)',
-        borderRight: '1px solid var(--border)',
+        background: 'var(--navy)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '2px 0 12px rgba(0,0,0,0.04)',
+        boxShadow: '2px 0 16px rgba(0,0,0,0.15)',
       }}>
         {/* Brand header */}
         <div style={{
-          padding: '22px 20px 18px',
-          background: 'var(--navy)',
+          padding: '22px 16px 18px',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}>
           <div style={{
-            fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.5)',
+            fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)',
             letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6,
           }}>
             Digital Sports Tech
           </div>
-          <div style={{
-            fontSize: 19,
-            fontWeight: 700,
-            color: '#fff',
-            lineHeight: 1.3,
-            fontFamily: 'var(--font-body)',
-          }}>
-            Trading Operations<br />
-            <span style={{ color: 'rgba(14,200,190,0.9)', fontWeight: 400, fontSize: 16 }}>Assistant</span>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', lineHeight: 1.3 }}>
+            Trading Operations
+            <br />
+            <span style={{ color: '#5DDDC8', fontWeight: 400, fontSize: 15 }}>Assistant</span>
           </div>
         </div>
 
         {/* Status pill */}
-        <div style={{ padding: '12px 16px 0' }}>
+        <div style={{ padding: '12px 12px 0' }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '8px 12px',
-            background: '#F0FAF0',
-            border: '1px solid #B8E6B8',
-            borderRadius: 8,
+            padding: '7px 11px',
+            background: 'rgba(46,204,113,0.1)',
+            border: '1px solid rgba(46,204,113,0.2)',
+            borderRadius: 7,
           }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#2ECC71', flexShrink: 0, boxShadow: '0 0 0 2px rgba(46,204,113,0.2)' }} />
-            <span style={{ fontSize: 12, color: '#1A6B3A', fontWeight: 600 }}>Online & Ready</span>
-            <span style={{ fontSize: 11, color: '#888', marginLeft: 'auto', fontFamily: 'var(--font-mono)' }}>v1.0</span>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2ECC71', flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: '#2ECC71', fontWeight: 600 }}>Online & Ready</span>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginLeft: 'auto', fontFamily: 'var(--font-mono)' }}>v1.0</span>
           </div>
         </div>
 
         {/* Knowledge base */}
-        <div style={{ padding: '14px 16px 0' }}>
-          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+        <div style={{ padding: '12px 12px 0' }}>
+          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 7 }}>
             Knowledge Base
           </div>
-          <div style={{
-            padding: '10px 12px',
-            background: 'var(--teal-light)',
-            border: '1px solid rgba(14,124,134,0.2)',
-            borderRadius: 8,
-            fontSize: 13,
-            color: 'var(--teal)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            fontWeight: 500,
-          }}>
-            <span style={{ fontSize: 15 }}>📋</span>
-            Traders Operational Manual
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {['📋 Traders Operational Manual', '🎧 Customer Service Guidelines', '⚾ MLB Setup Guide'].map((doc, i) => (
+              <div key={i} style={{
+                padding: '7px 10px',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 6,
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.55)',
+              }}>
+                {doc}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ height: 1, background: 'var(--border)', margin: '14px 16px' }} />
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '14px 12px' }} />
 
-        {/* Quick questions */}
-        <div style={{ padding: '0 16px', flex: 1, overflowY: 'auto' }}>
-          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
-            Common Questions
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {SUGGESTED.map((q, i) => (
-              <button key={i} onClick={() => send(q)} style={{
-                background: 'none',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                padding: '8px 11px',
-                fontSize: 12.5,
-                color: 'var(--text-2)',
-                textAlign: 'left',
-                cursor: 'pointer',
-                lineHeight: 1.45,
-                transition: 'all 0.15s',
-                fontFamily: 'var(--font-body)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'var(--teal-light)'
-                e.currentTarget.style.color = 'var(--teal)'
-                e.currentTarget.style.borderColor = 'rgba(14,124,134,0.3)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'none'
-                e.currentTarget.style.color = 'var(--text-2)'
-                e.currentTarget.style.borderColor = 'var(--border)'
+        {/* Quick questions by section */}
+        <div style={{ padding: '0 12px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {QUESTION_SECTIONS.map((section, si) => (
+            <div key={si}>
+              <div style={{
+                fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em',
+                textTransform: 'uppercase', marginBottom: 6,
+                color: 'rgba(255,255,255,0.35)',
+                display: 'flex', alignItems: 'center', gap: 6, padding: '0 4px',
               }}>
-                {q}
-              </button>
-            ))}
-          </div>
+                <span>{section.emoji}</span> {section.label}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {section.questions.map((q, i) => (
+                  <button key={i} onClick={() => send(q)} style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 7,
+                    padding: '7px 10px',
+                    fontSize: 12,
+                    color: 'rgba(255,255,255,0.6)',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    lineHeight: 1.4,
+                    transition: 'all 0.15s',
+                    fontFamily: 'var(--font-body)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(10,143,122,0.2)'
+                    e.currentTarget.style.color = '#5DDDC8'
+                    e.currentTarget.style.borderColor = 'rgba(10,143,122,0.4)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.6)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
+                  }}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
 
@@ -439,37 +446,47 @@ export default function ChatPage() {
               <div style={{ fontSize: 14.5, color: 'var(--text-2)', maxWidth: 440, lineHeight: 1.75, marginBottom: 32 }}>
                 Ask me anything from the Traders Operational Manual — settlement, regrading, client issues, voiding, or trading procedures.
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 580 }}>
-                {SUGGESTED.slice(0, 4).map((q, i) => (
-                  <button key={i} onClick={() => send(q)} style={{
-                    background: 'var(--bg-white)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 10,
-                    padding: '10px 16px',
-                    fontSize: 13,
-                    color: 'var(--text-2)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    maxWidth: 260,
-                    textAlign: 'left',
-                    lineHeight: 1.45,
-                    fontFamily: 'var(--font-body)',
-                    boxShadow: 'var(--shadow-sm)',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'var(--teal-light)'
-                    e.currentTarget.style.color = 'var(--teal)'
-                    e.currentTarget.style.borderColor = 'rgba(14,124,134,0.3)'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(14,124,134,0.15)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'var(--bg-white)'
-                    e.currentTarget.style.color = 'var(--text-2)'
-                    e.currentTarget.style.borderColor = 'var(--border)'
-                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
-                  }}>
-                    {q}
-                  </button>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 620 }}>
+                {QUESTION_SECTIONS.map((section, si) => (
+                  <div key={si} style={{ width: '100%', maxWidth: 580 }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6, textAlign: 'left', paddingLeft: 4 }}>
+                      {section.emoji} {section.label}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {section.questions.slice(0, 2).map((q, i) => (
+                        <button key={i} onClick={() => send(q)} style={{
+                          background: 'var(--bg-white)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 10,
+                          padding: '9px 14px',
+                          fontSize: 13,
+                          color: 'var(--text-2)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          flex: 1,
+                          minWidth: 200,
+                          textAlign: 'left',
+                          lineHeight: 1.45,
+                          fontFamily: 'var(--font-body)',
+                          boxShadow: 'var(--shadow-sm)',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = 'var(--teal-light)'
+                          e.currentTarget.style.color = 'var(--teal)'
+                          e.currentTarget.style.borderColor = 'rgba(14,124,134,0.3)'
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(14,124,134,0.15)'
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = 'var(--bg-white)'
+                          e.currentTarget.style.color = 'var(--text-2)'
+                          e.currentTarget.style.borderColor = 'var(--border)'
+                          e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
+                        }}>
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
