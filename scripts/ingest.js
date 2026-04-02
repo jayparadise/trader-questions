@@ -35,6 +35,8 @@ async function uploadImage(imagePath, docName) {
 async function parseHtmlDoc(htmlPath, docName) {
   const html = fs.readFileSync(htmlPath, 'utf-8')
   const $ = cheerio.load(html)
+
+  // Upload images first
   const imagesDir = path.join(path.dirname(htmlPath), 'images')
   const imageMap = {}
   if (fs.existsSync(imagesDir)) {
@@ -46,43 +48,73 @@ async function parseHtmlDoc(htmlPath, docName) {
     }
     console.log(' done')
   }
+
+  // Replace img tags with [IMAGE:url] markers
   $('img').each((_, el) => {
     const src = $(el).attr('src') || ''
     const filename = src.split('/').pop()
     const url = imageMap[filename]
-    $(el).replaceWith(url ? `\n[IMAGE:${url}]\n` : '')
+    $(el).replaceWith(url ? `[IMAGE:${url}]` : '')
   })
-  return $('body').text().replace(/\n{3,}/g, '\n\n').trim()
+
+  // Extract structured text using HTML tags — preserves headings and paragraphs
+  const lines = []
+  $('h1, h2, h3, h4, p, li, td, img').each((_, el) => {
+    const tag = el.tagName || el.name
+    const text = $(el).text().trim()
+    if (!text && !$(el).html()?.includes('[IMAGE:')) return
+    if (['h1','h2','h3','h4'].includes(tag)) {
+      lines.push(`\n\n## ${text}\n`)
+    } else if (tag === 'li') {
+      lines.push(`- ${text}`)
+    } else {
+      // Check for IMAGE markers in this element's html
+      const inner = $(el).html() || ''
+      if (inner.includes('[IMAGE:')) {
+        const match = inner.match(/\[IMAGE:(https?:\/\/[^\]]+)\]/)
+        if (match) lines.push(`\n[IMAGE:${match[1]}]\n`)
+      } else if (text) {
+        lines.push(text)
+      }
+    }
+  })
+
+  return lines.join('\n').replace(/\n{4,}/g, '\n\n\n').trim()
 }
 
 function parseTxtDoc(p) { return fs.readFileSync(p, 'utf-8') }
 
 function chunkDocument(text, filename) {
   const chunks = []
-  // Always chunk by size — split into ~1200 char pieces on paragraph boundaries
-  const paragraphs = text.split(/\n\n+/)
-  let cur = ''
-  let chunkTitle = text.split('\n')[0].replace(/^#+\s*/, '').trim().slice(0, 80) || filename
+  // Split on ## headings or large paragraph breaks
+  const sections = text.split(/\n(?=## )/g)
 
-  for (const para of paragraphs) {
-    const trimmed = para.trim()
-    if (!trimmed || trimmed.length < 10) continue
-    // If paragraph looks like a heading, use it as new section title
-    if (trimmed.length < 100 && !trimmed.includes('.') && trimmed === trimmed) {
-      if (cur.length > 200) {
-        chunks.push({ content: cur.trim(), section: chunkTitle, source: filename })
-        cur = ''
-      }
-      chunkTitle = trimmed.replace(/^#+\s*/, '').slice(0, 80)
-    }
-    if ((cur + '\n\n' + trimmed).length > 1200 && cur.length > 200) {
-      chunks.push({ content: cur.trim(), section: chunkTitle, source: filename })
-      cur = trimmed
+  for (const section of sections) {
+    const trimmed = section.trim()
+    if (trimmed.length < 30) continue
+
+    const title = trimmed.startsWith('## ')
+      ? trimmed.split('\n')[0].replace('## ', '').trim().slice(0, 80)
+      : (trimmed.split('\n')[0] || filename).slice(0, 80)
+
+    if (trimmed.length <= 1400) {
+      chunks.push({ content: trimmed, section: title, source: filename })
     } else {
-      cur += (cur ? '\n\n' : '') + trimmed
+      // Split large sections by paragraph
+      const paragraphs = trimmed.split(/\n\n+/)
+      let cur = ''
+      for (const para of paragraphs) {
+        if (!para.trim()) continue
+        if ((cur + '\n\n' + para).length > 1200 && cur.length > 100) {
+          chunks.push({ content: cur.trim(), section: title, source: filename })
+          cur = para
+        } else {
+          cur += (cur ? '\n\n' : '') + para
+        }
+      }
+      if (cur.trim().length > 30) chunks.push({ content: cur.trim(), section: title, source: filename })
     }
   }
-  if (cur.trim().length > 50) chunks.push({ content: cur.trim(), section: chunkTitle, source: filename })
   return chunks
 }
 
