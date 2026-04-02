@@ -78,7 +78,8 @@ function TypingDots() {
 }
 
 function renderInline(text) {
-  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g)
+  // Split on bold, code, and URLs
+  const parts = text.split(/(https?:\/\/[^\s]+|\*\*.*?\*\*|`.*?`)/g)
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={i} style={{ fontWeight: 700 }}>{part.slice(2, -2)}</strong>
@@ -89,6 +90,13 @@ function renderInline(text) {
         background: 'var(--teal-mid)', color: 'var(--teal)',
         padding: '1px 6px', borderRadius: 4,
       }}>{part.slice(1, -1)}</code>
+    }
+    if (part.startsWith('http://') || part.startsWith('https://')) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{
+        color: 'var(--teal)', textDecoration: 'underline',
+        textDecorationColor: 'rgba(14,124,134,0.4)',
+        wordBreak: 'break-all',
+      }}>{part}</a>
     }
     return part
   })
@@ -230,44 +238,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [ingesting, setIngesting] = useState(false)
-  const [ingestLog, setIngestLog] = useState([])
-  const [ingestDone, setIngestDone] = useState(false)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
-
-  async function runIngest() {
-    if (ingesting) return
-    setIngesting(true)
-    setIngestDone(false)
-    setIngestLog(['Starting update...'])
-
-    try {
-      const res = await fetch('/api/ingest', { method: 'POST' })
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const chunk = decoder.decode(value)
-        for (const line of chunk.split('\n')) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
-              if (data.message) setIngestLog(prev => [...prev, data.message])
-              if (data.done) setIngestDone(true)
-              if (data.error) setIngestLog(prev => [...prev, `❌ ${data.error}`])
-            } catch {}
-          }
-        }
-      }
-    } catch (err) {
-      setIngestLog(prev => [...prev, `❌ ${err.message}`])
-    } finally {
-      setIngesting(false)
-    }
-  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -383,39 +355,51 @@ export default function ChatPage() {
 
         {/* Knowledge base */}
         <div style={{ padding: '12px 12px 0' }}>
-          <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 7 }}>
-            Knowledge Base
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {[
-              '📋 Traders Operational Manual',
-              '🎧 Customer Service Guidelines',
-              '⚾ MLB Setup',
-              '🏀 NBA Setup',
-              '🏒 NHL Setup',
-              '🏈 NFL & NCAAF Guide',
-              '🏀 NCAAB Setup',
-              '📈 In-Play Trading',
-              '📊 O/U Trading Principles',
-              '🌍 IP Trader Manual',
-              '🔄 SST Settlement Steps',
-              '🏀 Global Basketball Projections',
-              '📅 Release Schedule',
-              '🔁 NBA Pulling & Reactivating',
-              '📚 Trading Resource',
-            ].map((doc, i) => (
-              <div key={i} style={{
-                padding: '6px 10px',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 6,
-                fontSize: 11.5,
-                color: 'rgba(255,255,255,0.55)',
-              }}>
-                {doc}
-              </div>
-            ))}
-          </div>
+          <details style={{ cursor: 'pointer' }}>
+            <summary style={{
+              fontSize: 11, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)',
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6,
+              userSelect: 'none',
+            }}>
+              <span style={{ color: 'rgba(255,255,255,0.25)' }}>▶</span>
+              Knowledge Base
+              <span style={{
+                marginLeft: 'auto', fontSize: 10,
+                background: 'rgba(93,221,200,0.15)', color: '#5DDDC8',
+                border: '1px solid rgba(93,221,200,0.2)',
+                borderRadius: 10, padding: '1px 7px',
+              }}>15 docs</span>
+            </summary>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 8 }}>
+              {[
+                '📋 Traders Operational Manual',
+                '🎧 Customer Service Guidelines',
+                '⚾ MLB Setup',
+                '🏀 NBA Setup',
+                '🏒 NHL Setup',
+                '🏈 NFL & NCAAF Guide',
+                '🏀 NCAAB Setup',
+                '📈 In-Play Trading',
+                '📊 O/U Trading Principles',
+                '🌍 IP Trader Manual',
+                '🔄 SST Settlement Steps',
+                '🏀 Global Basketball Projections',
+                '📅 Release Schedule',
+                '🔁 NBA Pulling & Reactivating',
+                '📚 Trading Resource',
+              ].map((doc, i) => (
+                <div key={i} style={{
+                  padding: '5px 10px', fontSize: 11,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 5, color: 'rgba(255,255,255,0.45)',
+                }}>
+                  {doc}
+                </div>
+              ))}
+            </div>
+          </details>
         </div>
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '14px 12px' }} />
@@ -463,53 +447,6 @@ export default function ChatPage() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Update Knowledge Base button */}
-        <div style={{ padding: '12px', borderTop: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
-          {ingestLog.length > 0 && (
-            <div style={{
-              marginBottom: 8, padding: '8px 10px',
-              background: 'rgba(0,0,0,0.2)', borderRadius: 7,
-              maxHeight: 110, overflowY: 'auto',
-            }}>
-              {ingestLog.map((line, i) => (
-                <div key={i} style={{
-                  fontSize: 11, fontFamily: 'var(--font-mono)', lineHeight: 1.6,
-                  color: line.startsWith('✅') ? '#5DDDC8' : line.startsWith('❌') ? '#FF6B6B' : 'rgba(255,255,255,0.45)',
-                }}>
-                  {line}
-                </div>
-              ))}
-            </div>
-          )}
-          <button
-            onClick={runIngest}
-            disabled={ingesting}
-            style={{
-              width: '100%', padding: '9px 12px', borderRadius: 8,
-              border: '1px solid rgba(93,221,200,0.3)',
-              background: ingesting ? 'rgba(93,221,200,0.05)' : 'rgba(93,221,200,0.1)',
-              color: ingesting ? 'rgba(93,221,200,0.4)' : '#5DDDC8',
-              fontSize: 12.5, fontWeight: 600, fontFamily: 'var(--font-body)',
-              cursor: ingesting ? 'default' : 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { if (!ingesting) e.currentTarget.style.background = 'rgba(93,221,200,0.18)' }}
-            onMouseLeave={e => { if (!ingesting) e.currentTarget.style.background = 'rgba(93,221,200,0.1)' }}
-          >
-            {ingesting ? (
-              <>
-                <span style={{
-                  width: 12, height: 12, borderRadius: '50%',
-                  border: '2px solid rgba(93,221,200,0.3)', borderTopColor: '#5DDDC8',
-                  display: 'block', animation: 'spin 0.7s linear infinite', flexShrink: 0,
-                }} />
-                Updating...
-              </>
-            ) : ingestDone ? '✅ Knowledge Base Updated' : '↻  Update Knowledge Base'}
-          </button>
         </div>
 
       </div>
