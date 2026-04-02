@@ -31,8 +31,8 @@ body {
   background: var(--bg);
   color: var(--text-1);
   font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 

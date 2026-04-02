@@ -114,73 +114,38 @@ function MessageContent({ content }) {
     const imageMatch = line.match(/\[IMAGE:(https?:\/\/[^\]]+)\]/)
     if (imageMatch) {
       elements.push(
-        <div key={i} style={{ margin: '12px 0' }}>
-          <img
-            src={imageMatch[1]}
-            alt="Reference screenshot"
-            style={{
-              maxWidth: '100%', borderRadius: 8,
-              border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-sm)',
-              display: 'block',
-            }}
-            onError={e => { e.currentTarget.style.display = 'none' }}
-          />
-          <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 4, fontFamily: 'var(--font-mono)' }}>
-            Reference screenshot
-          </div>
+        <div key={i} style={{ margin: '6px 0' }}>
+          <img src={imageMatch[1]} alt="Reference screenshot" style={{ maxWidth: '100%', borderRadius: 6, border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'block' }} onError={e => { e.currentTarget.style.display = 'none' }} />
+          <div style={{ fontSize: 9, color: 'var(--text-3)', marginTop: 2, fontFamily: 'var(--font-mono)' }}>Reference screenshot</div>
         </div>
       )
       i++; continue
     }
 
     if (line.startsWith('### ')) {
-      elements.push(
-        <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--teal)', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 16, marginBottom: 6, fontWeight: 500 }}>
-          {line.slice(4)}
-        </div>
-      )
+      elements.push(<div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--teal)', letterSpacing: '0.07em', textTransform: 'uppercase', marginTop: 10, marginBottom: 3, fontWeight: 500 }}>{line.slice(4)}</div>)
     } else if (line.startsWith('## ')) {
-      elements.push(
-        <div key={i} style={{ fontSize: 15, fontWeight: 700, color: 'var(--navy)', marginTop: 16, marginBottom: 6 }}>
-          {line.slice(3)}
-        </div>
-      )
+      elements.push(<div key={i} style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)', marginTop: 10, marginBottom: 3 }}>{line.slice(3)}</div>)
     } else if (line.match(/^\d+\. /)) {
       const num = line.match(/^(\d+)/)?.[1]
       const text = line.replace(/^\d+\. /, '')
       elements.push(
-        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, alignItems: 'flex-start' }}>
-          <span style={{
-            minWidth: 22, height: 22, borderRadius: '50%',
-            background: 'var(--teal)', color: '#fff',
-            fontSize: 11, fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginTop: 1, flexShrink: 0,
-          }}>{num}</span>
-          <span style={{ paddingTop: 2 }}>{renderInline(text)}</span>
+        <div key={i} style={{ display: 'flex', gap: 7, marginBottom: 3, alignItems: 'flex-start' }}>
+          <span style={{ minWidth: 17, height: 17, borderRadius: '50%', background: 'var(--teal)', color: '#fff', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1, flexShrink: 0 }}>{num}</span>
+          <span>{renderInline(text)}</span>
         </div>
       )
     } else if (line.startsWith('- ') || line.startsWith('• ')) {
       elements.push(
-        <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 5, alignItems: 'flex-start' }}>
-          <span style={{ color: 'var(--teal)', fontSize: 16, lineHeight: 1.4, flexShrink: 0, marginTop: 1 }}>›</span>
+        <div key={i} style={{ display: 'flex', gap: 7, marginBottom: 2, alignItems: 'flex-start' }}>
+          <span style={{ color: 'var(--teal)', fontSize: 13, lineHeight: 1.3, flexShrink: 0 }}>›</span>
           <span>{renderInline(line.slice(2))}</span>
         </div>
       )
     } else if (line.startsWith('> ')) {
-      elements.push(
-        <div key={i} style={{
-          borderLeft: '3px solid var(--teal)', paddingLeft: 12,
-          marginBottom: 8, color: 'var(--text-2)', fontStyle: 'italic', fontSize: 13,
-          background: 'var(--teal-light)', padding: '8px 12px',
-          borderRadius: '0 6px 6px 0',
-        }}>
-          {line.slice(2)}
-        </div>
-      )
+      elements.push(<div key={i} style={{ borderLeft: '3px solid var(--teal)', background: 'var(--teal-light)', padding: '5px 10px', borderRadius: '0 5px 5px 0', marginBottom: 5, color: 'var(--text-2)', fontStyle: 'italic', fontSize: 12 }}>{line.slice(2)}</div>)
     } else {
-      elements.push(<p key={i} style={{ marginBottom: 6 }}>{renderInline(line)}</p>)
+      elements.push(<p key={i} style={{ marginBottom: 3 }}>{renderInline(line)}</p>)
     }
     i++
   }
@@ -193,16 +158,16 @@ function Message({ msg, isLatest }) {
     <div className={isLatest ? 'fade-up' : ''} style={{
       display: 'flex',
       flexDirection: isUser ? 'row-reverse' : 'row',
-      gap: 12,
+      gap: 8,
       alignItems: 'flex-start',
-      padding: '0 28px',
-      marginBottom: 20,
+      padding: '0 20px',
+      marginBottom: 12,
     }}>
       {/* Avatar */}
       <div style={{
-        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+        width: 26, height: 26, borderRadius: 7, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600,
+        fontSize: 9, fontFamily: 'var(--font-mono)', fontWeight: 600,
         background: isUser ? 'var(--navy)' : 'var(--teal)',
         color: '#fff',
         boxShadow: isUser ? '0 2px 8px rgba(27,42,74,0.25)' : '0 2px 8px rgba(14,124,134,0.25)',
@@ -213,13 +178,13 @@ function Message({ msg, isLatest }) {
 
       {/* Bubble */}
       <div style={{
-        maxWidth: '74%',
+        maxWidth: '76%',
         background: isUser ? 'var(--navy)' : 'var(--bg-white)',
         border: `1px solid ${isUser ? 'transparent' : 'var(--border)'}`,
-        borderRadius: isUser ? '14px 4px 14px 14px' : '4px 14px 14px 14px',
-        padding: '13px 17px',
-        lineHeight: 1.7,
-        fontSize: 14,
+        borderRadius: isUser ? '12px 4px 12px 12px' : '4px 12px 12px 12px',
+        padding: '9px 13px',
+        lineHeight: 1.55,
+        fontSize: 13,
         color: isUser ? '#fff' : 'var(--text-1)',
         boxShadow: 'var(--shadow-sm)',
       }}>
@@ -312,7 +277,7 @@ export default function ChatPage() {
 
       {/* ── Sidebar ─────────────────────────────────────────── */}
       <div style={{
-        width: 272,
+        width: 240,
         flexShrink: 0,
         background: 'var(--navy)',
         borderRight: '1px solid rgba(255,255,255,0.06)',
@@ -471,8 +436,8 @@ export default function ChatPage() {
 
         {/* Top bar */}
         <div style={{
-          padding: '0 28px',
-          height: 54,
+          padding: '0 20px',
+          height: 44,
           borderBottom: '1px solid var(--border)',
           background: 'var(--bg-white)',
           display: 'flex',
@@ -572,7 +537,7 @@ export default function ChatPage() {
 
         {/* Input bar */}
         <div style={{
-          padding: '14px 24px 18px',
+          padding: '10px 16px 14px',
           borderTop: '1px solid var(--border)',
           background: 'var(--bg-white)',
           flexShrink: 0,
