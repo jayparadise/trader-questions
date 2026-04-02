@@ -373,30 +373,42 @@ export default function ChatPage() {
             </summary>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginTop: 8 }}>
               {[
-                '📋 Traders Operational Manual',
-                '🎧 Customer Service Guidelines',
-                '⚾ MLB Setup',
-                '🏀 NBA Setup',
-                '🏒 NHL Setup',
-                '🏈 NFL & NCAAF Guide',
-                '🏀 NCAAB Setup',
-                '📈 In-Play Trading',
-                '📊 O/U Trading Principles',
-                '🌍 IP Trader Manual',
-                '🔄 SST Settlement Steps',
-                '🏀 Global Basketball Projections',
-                '📅 Release Schedule',
-                '🔁 NBA Pulling & Reactivating',
-                '📚 Trading Resource',
+                { label: '📋 Traders Operational Manual', query: 'Give me an overview of the Traders Operational Manual' },
+                { label: '🎧 Customer Service Guidelines', query: 'Walk me through the Customer Service Guidelines' },
+                { label: '⚾ MLB Setup', query: 'Walk me through the full MLB daily setup process' },
+                { label: '🏀 NBA Setup', query: 'Walk me through the full NBA setup process' },
+                { label: '🏒 NHL Setup', query: 'Walk me through the full NHL setup process' },
+                { label: '🏈 NFL & NCAAF Guide', query: 'Walk me through the NFL and NCAAF guide' },
+                { label: '🏀 NCAAB Setup', query: 'Walk me through the full NCAAB setup process' },
+                { label: '📈 In-Play Trading', query: 'Walk me through the in-play trading process' },
+                { label: '📊 O/U Trading Principles', query: 'What are the O/U trading principles?' },
+                { label: '🌍 IP Trader Manual', query: 'Walk me through the IP Trader Manual' },
+                { label: '🔄 SST Settlement Steps', query: 'Walk me through the SST settlement steps' },
+                { label: '🏀 Global Basketball Projections', query: 'How does the global basketball projection system work?' },
+                { label: '📅 Release Schedule', query: 'What is the market release schedule for all sports?' },
+                { label: '🔁 NBA Pulling & Reactivating', query: 'How do I pull and reactivate NBA teams?' },
+                { label: '📚 Trading Resource', query: 'What is in the Trading Resource guide?' },
               ].map((doc, i) => (
-                <div key={i} style={{
-                  padding: '5px 10px', fontSize: 11,
+                <button key={i} onClick={() => send(doc.query)} style={{
+                  padding: '6px 10px', fontSize: 11,
                   background: 'rgba(255,255,255,0.04)',
                   border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 5, color: 'rgba(255,255,255,0.45)',
+                  borderRadius: 5, color: 'rgba(255,255,255,0.55)',
+                  textAlign: 'left', cursor: 'pointer',
+                  transition: 'all 0.15s', fontFamily: 'var(--font-body)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(93,221,200,0.12)'
+                  e.currentTarget.style.color = '#5DDDC8'
+                  e.currentTarget.style.borderColor = 'rgba(93,221,200,0.25)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.55)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'
                 }}>
-                  {doc}
-                </div>
+                  {doc.label}
+                </button>
               ))}
             </div>
           </details>
