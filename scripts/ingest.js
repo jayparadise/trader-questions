@@ -72,13 +72,28 @@ function parseTxtDoc(p) { return fs.readFileSync(p, 'utf-8') }
 function chunkDocument(text, filename) {
   const chunks = []
   const sections = text.split(/\n(?=#{1,3} |[0-9]+\.[0-9]* {1,3}[A-Z])/g)
-  for (const section of sections) {
+
+  // If only one section (no headings found), fall back to paragraph-based chunking
+  const effectiveSections = sections.length <= 1
+    ? text.split(/\n\n+/).reduce((acc, para) => {
+        if (!acc.length) return [para]
+        const last = acc[acc.length - 1]
+        if ((last + '\n\n' + para).length < 1400) {
+          acc[acc.length - 1] = last + '\n\n' + para
+        } else {
+          acc.push(para)
+        }
+        return acc
+      }, [])
+    : sections
+
+  for (const section of effectiveSections) {
     const trimmed = section.trim()
     if (trimmed.length < 50) continue
     if (trimmed.length > 1800) {
       const paragraphs = trimmed.split(/\n\n+/)
       let cur = ''
-      const title = trimmed.split('\n')[0].replace(/^#+\s*/, '').replace(/^[0-9.]+\s*/, '').trim()
+      const title = trimmed.split('\n')[0].replace(/^#+\s*/, '').replace(/^[0-9.]+\s*/, '').trim().slice(0, 80)
       for (const para of paragraphs) {
         if ((cur + para).length > 1400 && cur.length > 200) {
           chunks.push({ content: cur.trim(), section: title, source: filename })
@@ -87,7 +102,7 @@ function chunkDocument(text, filename) {
       }
       if (cur.trim().length > 50) chunks.push({ content: cur.trim(), section: title, source: filename })
     } else {
-      const title = trimmed.split('\n')[0].replace(/^#+\s*/, '').replace(/^[0-9.]+\s*/, '').trim()
+      const title = trimmed.split('\n')[0].replace(/^#+\s*/, '').replace(/^[0-9.]+\s*/, '').trim().slice(0, 80)
       chunks.push({ content: trimmed, section: title, source: filename })
     }
   }
