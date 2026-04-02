@@ -355,14 +355,17 @@ export default function ChatPage() {
 
         {/* Knowledge base */}
         <div style={{ padding: '12px 12px 0' }}>
-          <details style={{ cursor: 'pointer' }}>
+          <details style={{ cursor: 'pointer' }} onToggle={e => {
+            const arrow = e.currentTarget.querySelector('.kb-arrow')
+            if (arrow) arrow.style.transform = e.currentTarget.open ? 'rotate(90deg)' : 'rotate(0deg)'
+          }}>
             <summary style={{
               fontSize: 11, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)',
               letterSpacing: '0.1em', textTransform: 'uppercase',
               listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6,
               userSelect: 'none',
             }}>
-              <span style={{ color: 'rgba(255,255,255,0.25)' }}>▶</span>
+              <span className="kb-arrow" style={{ color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', display: 'inline-block' }}>▶</span>
               Knowledge Base
               <span style={{
                 marginLeft: 'auto', fontSize: 10,
