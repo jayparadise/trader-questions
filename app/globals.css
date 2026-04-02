@@ -1,25 +1,19 @@
 :root {
-  --bg:           #F7F5F0;
-  --bg-white:     #FFFFFF;
-  --bg-sidebar:   #FFFFFF;
-  --bg-hover:     #F0EDE8;
-  --border:       #E5E1D8;
-  --border-mid:   #D4CFC6;
-  --navy:         #1B2A4A;
-  --navy-light:   #2E4272;
-  --teal:         #0E7C86;
-  --teal-light:   #E6F4F5;
-  --teal-mid:     rgba(14, 124, 134, 0.12);
+  --bg:           #FFFFFF;
+  --bg-sidebar:   #1C2333;
+  --bg-user:      #F4F4F4;
+  --border:       #E5E5E5;
+  --border-mid:   #D4D4D4;
+  --navy:         #1C2333;
+  --teal:         #0A8F7A;
+  --teal-light:   #F0FAF8;
+  --teal-mid:     rgba(10,143,122,0.12);
   --amber:        #C9762B;
   --amber-light:  #FEF3E8;
-  --red:          #C0392B;
-  --text-1:       #1A1A2E;
-  --text-2:       #4A5270;
-  --text-3:       #8E94A8;
-  --user-bg:      #1B2A4A;
-  --user-text:    #FFFFFF;
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:    0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --text-1:       #1A1A1A;
+  --text-2:       #555555;
+  --text-3:       #999999;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
   --font-body:    var(--font-body-var, 'Plus Jakarta Sans', sans-serif);
   --font-mono:    var(--font-mono-var, 'IBM Plex Mono', monospace);
 }
@@ -31,26 +25,22 @@ body {
   background: var(--bg);
   color: var(--text-1);
   font-family: var(--font-body);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--teal); }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.8); }
+  0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.fade-up {
-  animation: fadeUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+.fade-up { animation: fadeUp 0.25s ease forwards; }
