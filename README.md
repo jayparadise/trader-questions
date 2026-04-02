@@ -191,3 +191,67 @@ The AI never makes things up — it can only answer based on what's in your docu
 ## Questions
 
 Escalate to Jason / Matt / Ari.
+
+---
+
+## Setting Up Google Docs Integration
+
+This allows the bot to pull directly from your live Google Docs — no manual exporting.
+
+### Step 1 — Create a Google Cloud Project
+
+1. Go to **console.cloud.google.com**
+2. Click **Select a project** (top left) → **New Project**
+3. Name it `trader-bot` → click **Create**
+4. Make sure your new project is selected in the top bar
+
+### Step 2 — Enable the Google Drive API
+
+1. In the left menu: **APIs & Services** → **Library**
+2. Search for **Google Drive API** → click it → click **Enable**
+
+### Step 3 — Create a Service Account
+
+1. In the left menu: **APIs & Services** → **Credentials**
+2. Click **Create Credentials** → **Service Account**
+3. Name: `trader-bot-reader` → click **Create and Continue** → click **Done**
+4. Click on the service account you just created
+5. Go to the **Keys** tab → **Add Key** → **Create new key** → **JSON** → **Create**
+6. A `.json` file downloads to your computer — keep this safe
+
+### Step 4 — Add the Credential to Vercel
+
+1. Open the downloaded `.json` file in TextEdit
+2. Select all (Cmd+A) and copy the entire contents
+3. Go to **vercel.com** → your project → **Settings** → **Environment Variables**
+4. Add a new variable:
+   - Name: `GOOGLE_SERVICE_ACCOUNT_JSON`
+   - Value: paste the entire JSON content
+5. Click **Save**
+6. Also add it to your local `.env.local` file:
+   ```
+   GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...paste the whole thing...}
+   ```
+
+### Step 5 — Share Your Docs with the Service Account
+
+1. Open the `.json` file and find the `client_email` field — it looks like:
+   `trader-bot-reader@trader-bot-xxxxx.iam.gserviceaccount.com`
+2. Open each Google Doc you want the bot to learn from
+3. Click **Share** → paste the service account email → set to **Viewer** → **Send**
+
+### Step 6 — Add Your Doc IDs to the Config
+
+1. Open `docs/google-docs.config.js`
+2. For each doc, get the ID from the URL:
+   `https://docs.google.com/document/d/THIS_IS_THE_ID/edit`
+3. Add it to the config:
+   ```js
+   { id: 'YOUR_DOC_ID', name: 'Your Doc Name' },
+   ```
+
+### Step 7 — Deploy and Update
+
+Push to GitHub → Vercel redeploys → click **Update Knowledge Base** in the app.
+
+From now on, whenever a doc changes: click **Update Knowledge Base**. Done.

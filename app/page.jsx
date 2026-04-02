@@ -4,15 +4,39 @@ import { useState, useRef, useEffect } from 'react'
 
 const QUESTION_SECTIONS = [
   {
-    label: 'Trading & Settlement',
-    emoji: '📊',
+    label: 'Daily Setup',
+    emoji: '🚀',
     questions: [
-      'What do I do if a soccer match is suspended mid-game?',
+      'Walk me through the MLB daily setup process.',
+      'How do I set up NBA games for today?',
+      'How do I set up NHL games?',
+      'How do I set up NCAAB games?',
+      'How do I handle a doubleheader in MLB setup?',
+      'What is the market release schedule for each sport?',
+    ],
+  },
+  {
+    label: 'Settlement & Regrading',
+    emoji: '⚖️',
+    questions: [
       'How do I regrade a single bet for a client?',
       'What steps do I take when player markets haven\'t settled?',
       'How do I manually settle game markets for an event?',
+      'Walk me through SST settlement steps for soccer.',
+      'What do I do if a soccer match is suspended mid-game?',
+      'Walk me through the MLB postponed game void process.',
+    ],
+  },
+  {
+    label: 'Trading',
+    emoji: '📊',
+    questions: [
+      'What are the O/U trading principles I should follow?',
+      'How does in-play trading work?',
       'What do I do if comps are lagging or missing?',
-      'What is the market release schedule for NBA games?',
+      'How do I pull and reactivate NBA teams?',
+      'How does the global basketball projection system work?',
+      'What do I do if soccer goal or card prices are missing?',
     ],
   },
   {
@@ -28,14 +52,12 @@ const QUESTION_SECTIONS = [
     ],
   },
   {
-    label: 'MLB Setup',
-    emoji: '⚾',
+    label: 'NFL & NCAAF',
+    emoji: '🏈',
     questions: [
-      'Walk me through the MLB daily setup process.',
-      'How do I handle a doubleheader in MLB setup?',
-      'What do I do if an MLB game is postponed?',
-      'How do I handle a suspended MLB game being resumed the next day?',
-      'What do I do after turning on auto trading for MLB?',
+      'Walk me through the NFL and NCAAF setup guide.',
+      'How do I settle a first touchdown market?',
+      'How do I settle a first touchdown if an unlisted player scores?',
     ],
   },
 ]
@@ -208,8 +230,44 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [ingesting, setIngesting] = useState(false)
+  const [ingestLog, setIngestLog] = useState([])
+  const [ingestDone, setIngestDone] = useState(false)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
+
+  async function runIngest() {
+    if (ingesting) return
+    setIngesting(true)
+    setIngestDone(false)
+    setIngestLog(['Starting update...'])
+
+    try {
+      const res = await fetch('/api/ingest', { method: 'POST' })
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value)
+        for (const line of chunk.split('\n')) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6))
+              if (data.message) setIngestLog(prev => [...prev, data.message])
+              if (data.done) setIngestDone(true)
+              if (data.error) setIngestLog(prev => [...prev, `❌ ${data.error}`])
+            } catch {}
+          }
+        }
+      }
+    } catch (err) {
+      setIngestLog(prev => [...prev, `❌ ${err.message}`])
+    } finally {
+      setIngesting(false)
+    }
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -329,13 +387,29 @@ export default function ChatPage() {
             Knowledge Base
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {['📋 Traders Operational Manual', '🎧 Customer Service Guidelines', '⚾ MLB Setup Guide'].map((doc, i) => (
+            {[
+              '📋 Traders Operational Manual',
+              '🎧 Customer Service Guidelines',
+              '⚾ MLB Setup',
+              '🏀 NBA Setup',
+              '🏒 NHL Setup',
+              '🏈 NFL & NCAAF Guide',
+              '🏀 NCAAB Setup',
+              '📈 In-Play Trading',
+              '📊 O/U Trading Principles',
+              '🌍 IP Trader Manual',
+              '🔄 SST Settlement Steps',
+              '🏀 Global Basketball Projections',
+              '📅 Release Schedule',
+              '🔁 NBA Pulling & Reactivating',
+              '📚 Trading Resource',
+            ].map((doc, i) => (
               <div key={i} style={{
-                padding: '7px 10px',
+                padding: '6px 10px',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 6,
-                fontSize: 12,
+                fontSize: 11.5,
                 color: 'rgba(255,255,255,0.55)',
               }}>
                 {doc}
@@ -391,6 +465,52 @@ export default function ChatPage() {
           ))}
         </div>
 
+        {/* Update Knowledge Base button */}
+        <div style={{ padding: '12px', borderTop: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
+          {ingestLog.length > 0 && (
+            <div style={{
+              marginBottom: 8, padding: '8px 10px',
+              background: 'rgba(0,0,0,0.2)', borderRadius: 7,
+              maxHeight: 110, overflowY: 'auto',
+            }}>
+              {ingestLog.map((line, i) => (
+                <div key={i} style={{
+                  fontSize: 11, fontFamily: 'var(--font-mono)', lineHeight: 1.6,
+                  color: line.startsWith('✅') ? '#5DDDC8' : line.startsWith('❌') ? '#FF6B6B' : 'rgba(255,255,255,0.45)',
+                }}>
+                  {line}
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={runIngest}
+            disabled={ingesting}
+            style={{
+              width: '100%', padding: '9px 12px', borderRadius: 8,
+              border: '1px solid rgba(93,221,200,0.3)',
+              background: ingesting ? 'rgba(93,221,200,0.05)' : 'rgba(93,221,200,0.1)',
+              color: ingesting ? 'rgba(93,221,200,0.4)' : '#5DDDC8',
+              fontSize: 12.5, fontWeight: 600, fontFamily: 'var(--font-body)',
+              cursor: ingesting ? 'default' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { if (!ingesting) e.currentTarget.style.background = 'rgba(93,221,200,0.18)' }}
+            onMouseLeave={e => { if (!ingesting) e.currentTarget.style.background = 'rgba(93,221,200,0.1)' }}
+          >
+            {ingesting ? (
+              <>
+                <span style={{
+                  width: 12, height: 12, borderRadius: '50%',
+                  border: '2px solid rgba(93,221,200,0.3)', borderTopColor: '#5DDDC8',
+                  display: 'block', animation: 'spin 0.7s linear infinite', flexShrink: 0,
+                }} />
+                Updating...
+              </>
+            ) : ingestDone ? '✅ Knowledge Base Updated' : '↻  Update Knowledge Base'}
+          </button>
+        </div>
 
       </div>
 
