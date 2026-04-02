@@ -2,6 +2,7 @@
  * Ingestion Script — supports .txt and .html (Google Doc exports)
  * Images are uploaded to Supabase Storage and embedded inline as [IMAGE:url] markers.
  * Run: npm run ingest
+ * trying again
  */
 
 const { createClient } = require('@supabase/supabase-js')
