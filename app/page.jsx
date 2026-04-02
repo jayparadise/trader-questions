@@ -3,18 +3,6 @@ import { useState, useRef, useEffect } from 'react'
 
 const QUESTION_SECTIONS = [
   {
-    label: 'Daily Setup',
-    emoji: '🚀',
-    questions: [
-      'Walk me through the MLB daily setup process.',
-      'How do I set up NBA games for today?',
-      'How do I set up NHL games?',
-      'How do I set up NCAAB games?',
-      'How do I handle a doubleheader in MLB setup?',
-      'What is the market release schedule for each sport?',
-    ],
-  },
-  {
     label: 'Settlement & Regrading',
     emoji: '⚖️',
     questions: [
@@ -48,15 +36,6 @@ const QUESTION_SECTIONS = [
       'A data feed client says they are missing markets — how do I fix it?',
       'A client is getting error messages on bet placement — what do I check?',
       'Widgets are not loading for a client — what is the fix?',
-    ],
-  },
-  {
-    label: 'NFL & NCAAF',
-    emoji: '🏈',
-    questions: [
-      'Walk me through the NFL and NCAAF setup guide.',
-      'How do I settle a first touchdown market?',
-      'How do I settle a first touchdown if an unlisted player scores?',
     ],
   },
 ]
@@ -197,6 +176,7 @@ export default function ChatPage() {
     if (!query || loading) return
     setInput('')
     setLoading(true)
+    setRecentQuestions(prev => [query, ...prev.filter(q => q !== query)].slice(0, 6))
     setMessages(prev => [...prev, { role: 'user', content: query }, { role: 'assistant', content: '' }])
 
     try {
@@ -237,7 +217,8 @@ export default function ChatPage() {
 
   // Sidebar section state
   const [openSections, setOpenSections] = useState({})
-  const [kbOpen, setKbOpen] = useState(false)
+  const [kbOpen, setKbOpen] = useState(true)
+  const [recentQuestions, setRecentQuestions] = useState([])
 
   return (
     <div style={{ display:'flex', height:'100vh', overflow:'hidden' }}>
@@ -307,6 +288,27 @@ export default function ChatPage() {
             </div>
           ))}
         </div>
+
+        {/* Recent Questions */}
+        {recentQuestions.length > 0 && (
+          <>
+            <div style={{ height:1, background:'rgba(255,255,255,0.07)', margin:'0 12px 10px' }}/>
+            <div style={{ padding:'0 12px', paddingBottom:16 }}>
+              <div style={{ fontSize:10, fontFamily:'var(--font-mono)', color:'rgba(255,255,255,0.35)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:6 }}>
+                🕒 Recent
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:1 }}>
+                {recentQuestions.map((q, i) => (
+                  <button key={i} onClick={() => send(q)} style={{ background:'none', border:'none', padding:'5px 8px', fontSize:12, color:'rgba(255,255,255,0.45)', textAlign:'left', cursor:'pointer', borderRadius:6, transition:'all 0.12s', lineHeight:1.4, fontFamily:'var(--font-body)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background='rgba(93,221,200,0.1)'; e.currentTarget.style.color='#5DDDC8' }}
+                    onMouseLeave={e => { e.currentTarget.style.background='none'; e.currentTarget.style.color='rgba(255,255,255,0.45)' }}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── Main ─────────────────────────────────────────────── */}
