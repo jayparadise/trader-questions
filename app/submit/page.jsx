@@ -35,6 +35,7 @@ export default function SubmitPage() {
   const [screenshot, setScreenshot] = useState(null)
   const [status, setStatus] = useState(null)
   const [recentSubmissions, setRecentSubmissions] = useState([])
+  const [errorMsg, setErrorMsg] = useState('')
   const fileInputRef = useRef(null)
 
   async function handleImageFile(file) {
@@ -63,16 +64,18 @@ export default function SubmitPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: question.trim(), answer: answer.trim(), category, screenshot }),
       })
-      if (!res.ok) throw new Error('Failed')
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
       setRecentSubmissions(prev => [{ question, category, time: new Date().toLocaleTimeString() }, ...prev.slice(0, 4)])
       setQuestion('')
       setAnswer('')
       setScreenshot(null)
       setStatus('success')
-      setTimeout(() => setStatus(null), 3000)
-    } catch {
+      setTimeout(() => setStatus(null), 4000)
+    } catch (err) {
       setStatus('error')
-      setTimeout(() => setStatus(null), 3000)
+      setErrorMsg(err.message)
+      setTimeout(() => setStatus(null), 6000)
     }
   }
 
@@ -185,7 +188,7 @@ export default function SubmitPage() {
                 ) : '+ Add to Knowledge Base'}
               </button>
               {status === 'success' && <div style={{ fontSize: 13, color: '#2ECC71', fontWeight: 600 }}>✓ Added — available to traders immediately</div>}
-              {status === 'error' && <div style={{ fontSize: 13, color: '#e74c3c', fontWeight: 600 }}>✗ Something went wrong. Please try again.</div>}
+              {status === 'error' && <div style={{ fontSize: 13, color: '#e74c3c', fontWeight: 600 }}>✗ {errorMsg || 'Something went wrong. Please try again.'}</div>}
             </div>
           </form>
         </div>
