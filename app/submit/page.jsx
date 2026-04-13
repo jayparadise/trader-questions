@@ -11,6 +11,23 @@ const CATEGORIES = [
   'Other',
 ]
 
+// Compress image to max 800px wide and JPEG quality 0.7 before sending
+function compressImage(dataUrl, maxWidth = 800, quality = 0.7) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const scale = Math.min(1, maxWidth / img.width)
+      canvas.width = img.width * scale
+      canvas.height = img.height * scale
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.src = dataUrl
+  })
+}
+
 export default function SubmitPage() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
@@ -20,10 +37,13 @@ export default function SubmitPage() {
   const [recentSubmissions, setRecentSubmissions] = useState([])
   const fileInputRef = useRef(null)
 
-  function handleImageFile(file) {
+  async function handleImageFile(file) {
     if (!file || !file.type.startsWith('image/')) return
     const reader = new FileReader()
-    reader.onload = ev => setScreenshot(ev.target.result)
+    reader.onload = async (ev) => {
+      const compressed = await compressImage(ev.target.result)
+      setScreenshot(compressed)
+    }
     reader.readAsDataURL(file)
   }
 
@@ -67,19 +87,26 @@ export default function SubmitPage() {
           <div style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Digital Sports Tech</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Training Submission</div>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:4 }}><a href="/" style={{ padding:"6px 14px", borderRadius:7, fontSize:13, fontWeight:500, color:"rgba(255,255,255,0.5)", textDecoration:"none" }}>Assistant</a><div style={{ padding:"6px 14px", borderRadius:7, fontSize:13, fontWeight:600, background:"rgba(93,221,200,0.15)", color:"#5DDDC8" }}>Add to Knowledge Base</div></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'rgba(255,255,255,0.1)', borderRadius: 9, padding: 3 }}>
+          <a href="/" style={{ padding: '5px 16px', borderRadius: 7, fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}>
+            Assistant
+          </a>
+          <div style={{ padding: '5px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, background: 'rgba(255,255,255,0.15)', color: '#5DDDC8' }}>
+            Add to Knowledge Base
+          </div>
+        </div>
       </div>
 
       <div style={{ flex: 1, display: 'flex', gap: 24, padding: '32px', maxWidth: 1100, width: '100%', margin: '0 auto', alignItems: 'flex-start' }}>
 
-        {/* Main form */}
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: '#1C2333', marginBottom: 24 }}>Add to Knowledge Base</h1>
 
           <form onSubmit={handleSubmit}>
             <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', overflow: 'hidden' }}>
 
-              {/* Category */}
               <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E5E5' }}>
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Category</label>
                 <select value={category} onChange={e => setCategory(e.target.value)}
@@ -88,7 +115,6 @@ export default function SubmitPage() {
                 </select>
               </div>
 
-              {/* Question */}
               <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E5E5' }}>
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 8 }}>
                   Question / Problem <span style={{ color: '#e74c3c' }}>*</span>
@@ -98,7 +124,6 @@ export default function SubmitPage() {
                   style={{ width: '100%', border: 'none', outline: 'none', fontSize: 14, color: '#1C2333', background: 'none', fontFamily: 'inherit', resize: 'vertical', lineHeight: 1.6, minHeight: 80 }} />
               </div>
 
-              {/* Answer */}
               <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E5E5' }}>
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 8 }}>
                   Answer / Resolution <span style={{ color: '#e74c3c' }}>*</span>
@@ -108,7 +133,6 @@ export default function SubmitPage() {
                   style={{ width: '100%', border: 'none', outline: 'none', fontSize: 14, color: '#1C2333', background: 'none', fontFamily: 'inherit', resize: 'vertical', lineHeight: 1.6, minHeight: 140 }} />
               </div>
 
-              {/* Screenshot */}
               <div style={{ padding: '16px 20px' }}>
                 <label style={{ fontSize: 11, fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 10 }}>
                   Screenshot <span style={{ color: '#ccc', fontWeight: 400 }}>(optional)</span>
@@ -145,7 +169,6 @@ export default function SubmitPage() {
               </div>
             </div>
 
-            {/* Submit */}
             <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
               <button type="submit" disabled={!canSubmit}
                 style={{
@@ -167,7 +190,6 @@ export default function SubmitPage() {
           </form>
         </div>
 
-        {/* Recent submissions sidebar */}
         {recentSubmissions.length > 0 && (
           <div style={{ width: 280, flexShrink: 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Added This Session</div>
