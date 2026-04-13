@@ -81,10 +81,20 @@ function renderInline(text) {
   })
 }
 
-function MessageContent({ content }) {
+function MessageContent({ content, image }) {
   const lines = content.split('\n')
   const elements = []
   let i = 0
+
+  // If this message had a pasted image, show it first
+  if (image) {
+    elements.push(
+      <div key="user-img" style={{ marginBottom: 8 }}>
+        <img src={image} alt="Attached screenshot" style={{ maxHeight: 200, maxWidth: '100%', borderRadius: 8, border: '1px solid var(--border)', display: 'block' }} />
+      </div>
+    )
+  }
+
   while (i < lines.length) {
     const line = lines[i]
     if (!line.trim()) { i++; continue }
@@ -138,22 +148,15 @@ function Message({ msg, isLatest }) {
   return (
     <div className={isLatest ? 'fade-up' : ''} style={{ marginBottom: 24, padding: isUser ? '14px 24px' : '0 24px' }}>
       {isUser ? (
-        // User message — right aligned pill
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{
-            background: 'var(--bg-user)',
-            borderRadius: 18,
-            padding: '10px 16px',
-            maxWidth: '70%',
-            fontSize: 14,
-            lineHeight: 1.6,
-            color: 'var(--text-1)',
-          }}>
+          <div style={{ background: 'var(--bg-user)', borderRadius: 18, padding: '10px 16px', maxWidth: '70%', fontSize: 14, lineHeight: 1.6, color: 'var(--text-1)' }}>
+            {msg.image && (
+              <img src={msg.image} alt="Attached screenshot" style={{ maxHeight: 160, maxWidth: '100%', borderRadius: 8, display: 'block', marginBottom: msg.content ? 8 : 0 }} />
+            )}
             {msg.content}
           </div>
         </div>
       ) : (
-        // AI message — full width, no bubble
         <div style={{ maxWidth: 760, fontSize: 14, color: 'var(--text-1)' }}>
           {msg.content === '' ? <TypingDots /> : <MessageContent content={msg.content} />}
         </div>
@@ -166,6 +169,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [pastedImage, setPastedImage] = useState(null)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -173,17 +177,23 @@ export default function ChatPage() {
 
   async function send(text) {
     const query = text || input.trim()
-    if (!query || loading) return
+    if ((!query && !pastedImage) || loading) return
     setInput('')
+    const imageToSend = pastedImage
+    setPastedImage(null)
     setLoading(true)
     setRecentQuestions(prev => [query, ...prev.filter(q => q !== query)].slice(0, 6))
-    setMessages(prev => [...prev, { role: 'user', content: query }, { role: 'assistant', content: '' }])
+    setMessages(prev => [
+      ...prev,
+      { role: 'user', content: query, image: imageToSend },
+      { role: 'assistant', content: '' },
+    ])
 
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: query, history: messages }),
+        body: JSON.stringify({ message: query, history: messages, image: imageToSend }),
       })
       if (!res.ok) throw new Error('Request failed')
       const reader = res.body.getReader()
@@ -213,7 +223,23 @@ export default function ChatPage() {
   }
 
   function handleKey(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()} }
+
+  function handlePaste(e) {
+    const items = e.clipboardData?.items
+    if (!items) return
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault()
+        const reader = new FileReader()
+        reader.onload = ev => setPastedImage(ev.target.result)
+        reader.readAsDataURL(item.getAsFile())
+        return
+      }
+    }
+  }
+
   const isEmpty = messages.length === 0
+  const canSend = (input.trim() || pastedImage) && !loading
 
   // Sidebar section state
   const [openSections, setOpenSections] = useState({})
@@ -327,7 +353,7 @@ export default function ChatPage() {
               <div style={{ fontSize:28, marginBottom:16 }}>🎯</div>
               <div style={{ fontSize:22, fontWeight:700, color:'var(--navy)', marginBottom:10 }}>How can I help?</div>
               <div style={{ fontSize:14, color:'var(--text-2)', maxWidth:420, lineHeight:1.7, marginBottom:32 }}>
-                Ask me anything from the Traders Operational Manual — settlement, regrading, client issues, voiding, or daily setup.
+                Ask me anything from the Traders Operational Manual — settlement, regrading, client issues, voiding, or daily setup. You can also paste a screenshot directly into the chat box.
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, justifyContent:'center', maxWidth:600 }}>
                 {QUESTION_SECTIONS.flatMap(s=>s.questions.slice(0,1)).slice(0,6).map((q,i) => (
@@ -347,21 +373,40 @@ export default function ChatPage() {
 
         {/* Input */}
         <div style={{ padding:'12px 24px 20px', borderTop:'1px solid var(--border)', background:'#fff', flexShrink:0 }}>
+
+          {/* Pasted image preview */}
+          {pastedImage && (
+            <div style={{ position:'relative', display:'inline-block', marginBottom:8 }}>
+              <img src={pastedImage} alt="Pasted screenshot" style={{ maxHeight:120, maxWidth:300, borderRadius:8, border:'1px solid var(--border)', display:'block' }} />
+              <button onClick={()=>setPastedImage(null)} style={{ position:'absolute', top:-8, right:-8, width:20, height:20, borderRadius:'50%', background:'#333', color:'#fff', border:'none', cursor:'pointer', fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1 }}>×</button>
+            </div>
+          )}
+
           <div style={{ display:'flex', gap:10, border:'1px solid var(--border-mid)', borderRadius:12, padding:'8px 8px 8px 16px', transition:'border-color 0.2s, box-shadow 0.2s', background:'#fff' }}
             onFocusCapture={e=>{e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.boxShadow='0 0 0 3px rgba(10,143,122,0.08)'}}
             onBlurCapture={e=>{e.currentTarget.style.borderColor='var(--border-mid)';e.currentTarget.style.boxShadow='none'}}>
-            <textarea ref={inputRef} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={handleKey} disabled={loading}
-              placeholder="Type your question about any trading procedure…" rows={1}
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e=>setInput(e.target.value)}
+              onKeyDown={handleKey}
+              onPaste={handlePaste}
+              disabled={loading}
+              placeholder={pastedImage ? 'Add a question about this screenshot, or just hit send…' : 'Type your question or paste a screenshot…'}
+              rows={1}
               style={{ flex:1, background:'none', border:'none', outline:'none', color:'var(--text-1)', fontSize:14, fontFamily:'var(--font-body)', resize:'none', padding:'4px 0', lineHeight:1.5, maxHeight:120, overflowY:'auto' }}
               onInput={e=>{e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,120)+'px'}}
             />
-            <button onClick={()=>send()} disabled={!input.trim()||loading} style={{ width:36, height:36, borderRadius:8, border:'none', background:(!input.trim()||loading)?'var(--border)':'var(--navy)', color:(!input.trim()||loading)?'var(--text-3)':'#fff', cursor:(!input.trim()||loading)?'default':'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, flexShrink:0, alignSelf:'flex-end', marginBottom:1, transition:'all 0.15s' }}
-              onMouseEnter={e=>{if(!(!input.trim()||loading))e.currentTarget.style.background='var(--teal)'}}
-              onMouseLeave={e=>{if(!(!input.trim()||loading))e.currentTarget.style.background='var(--navy)'}}>
+            <button
+              onClick={()=>send()}
+              disabled={!canSend}
+              style={{ width:36, height:36, borderRadius:8, border:'none', background:canSend?'var(--navy)':'var(--border)', color:canSend?'#fff':'var(--text-3)', cursor:canSend?'pointer':'default', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, flexShrink:0, alignSelf:'flex-end', marginBottom:1, transition:'all 0.15s' }}
+              onMouseEnter={e=>{if(canSend)e.currentTarget.style.background='var(--teal)'}}
+              onMouseLeave={e=>{if(canSend)e.currentTarget.style.background='var(--navy)'}}>
               {loading ? <span style={{ width:14,height:14,borderRadius:'50%',border:'2px solid var(--text-3)',borderTopColor:'transparent',display:'block',animation:'spin 0.7s linear infinite' }}/> : '↑'}
             </button>
           </div>
-          <div style={{ fontSize:11, color:'var(--text-3)', marginTop:8, textAlign:'center', fontFamily:'var(--font-mono)' }}>Enter to send · Shift+Enter for new line</div>
+          <div style={{ fontSize:11, color:'var(--text-3)', marginTop:8, textAlign:'center', fontFamily:'var(--font-mono)' }}>Enter to send · Shift+Enter for new line · Paste a screenshot directly</div>
         </div>
       </div>
     </div>
