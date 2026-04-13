@@ -67,7 +67,7 @@ export default function SubmitPage() {
           <div style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Digital Sports Tech</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Training Submission</div>
         </div>
-        <a href="/" style={{ fontSize: 12, color: '#5DDDC8', textDecoration: 'none' }}>← Back to Assistant</a>
+        <div style={{ display:"flex", alignItems:"center", gap:4 }}><a href="/" style={{ padding:"6px 14px", borderRadius:7, fontSize:13, fontWeight:500, color:"rgba(255,255,255,0.5)", textDecoration:"none" }}>Assistant</a><div style={{ padding:"6px 14px", borderRadius:7, fontSize:13, fontWeight:600, background:"rgba(93,221,200,0.15)", color:"#5DDDC8" }}>Add to Knowledge Base</div></div>
       </div>
 
       <div style={{ flex: 1, display: 'flex', gap: 24, padding: '32px', maxWidth: 1100, width: '100%', margin: '0 auto', alignItems: 'flex-start' }}>
