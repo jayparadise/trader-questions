@@ -243,13 +243,13 @@ export default function ChatPage() {
 
         {/* Top nav with tabs */}
         <div style={{ height:48, borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px', flexShrink:0 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-            <div style={{ padding:'6px 14px', borderRadius:7, fontSize:13, fontWeight:600, background:'var(--teal-light)', color:'var(--teal)' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:2, background:'var(--border)', borderRadius:9, padding:3 }}>
+            <div style={{ padding:'5px 16px', borderRadius:7, fontSize:13, fontWeight:600, background:'#fff', color:'var(--navy)', boxShadow:'0 1px 3px rgba(0,0,0,0.1)' }}>
               Assistant
             </div>
-            <a href="/submit" style={{ padding:'6px 14px', borderRadius:7, fontSize:13, fontWeight:500, color:'var(--text-3)', textDecoration:'none', transition:'all 0.15s' }}
-              onMouseEnter={e=>{e.currentTarget.style.background='var(--border)';e.currentTarget.style.color='var(--text-1)'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--text-3)'}}>
+            <a href="/submit" style={{ padding:'5px 16px', borderRadius:7, fontSize:13, fontWeight:500, color:'var(--text-2)', textDecoration:'none', transition:'all 0.15s' }}
+              onMouseEnter={e=>{e.currentTarget.style.color='var(--navy)'}}
+              onMouseLeave={e=>{e.currentTarget.style.color='var(--text-2)'}}>
               Add to Knowledge Base
             </a>
           </div>
