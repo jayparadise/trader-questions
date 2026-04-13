@@ -21,7 +21,6 @@ Guidelines:
 - If a specific report or URL is mentioned in the context, include it
 - If the context doesn't contain enough information to answer fully, say so clearly and advise escalating to Jason, Matt, or Ari
 - Never make up procedures or tools not mentioned in the context
-- Remind traders to verify in live reports for critical settlement actions
 - IMPORTANT: If the context contains any [IMAGE:https://...] markers, reproduce them exactly as-is in your response at the relevant point in your answer. Do not alter or omit them. They will render as screenshots for the trader.`
 
 export async function POST(req) {
@@ -51,15 +50,11 @@ export async function POST(req) {
     ? chunks.map(c => c.content).join('\n\n---\n\n')
     : 'No relevant sections found in the manual.'
 
-  const sources = chunks?.length > 0
-    ? [...new Set(chunks.map(c => c.metadata?.section).filter(Boolean))]
-    : []
-
   // 4. Build conversation history for Claude
   const conversationHistory = (history || []).map(m => ({
     role: m.role,
     content: m.content,
-  })).filter(m => m.content) // remove empty placeholder messages
+  })).filter(m => m.content)
 
   // 5. Stream response from Claude
   const encoder = new TextEncoder()
@@ -67,13 +62,8 @@ export async function POST(req) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // First, send the sources
-        const sourcesEvent = `data: ${JSON.stringify({ type: 'sources', sources })}\n\n`
-        controller.enqueue(encoder.encode(sourcesEvent))
-
-        // Stream Claude response
         const claudeStream = await anthropic.messages.stream({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5',
           max_tokens: 1024,
           system: SYSTEM_PROMPT,
           messages: [
