@@ -56,6 +56,7 @@ const DOCS = [
   { label: '📅 Release Schedule', query: 'What is the market release schedule for all sports?' },
   { label: '🔁 NBA Pulling & Reactivating', query: 'How do I pull and reactivate NBA teams?' },
   { label: '📚 Trading Resource', query: 'What is in the Trading Resource guide?' },
+  { label: '❓ FAQ & Betting Rules', query: 'Walk me through the FAQ and betting rules' },
 ]
 
 function TypingDots() {
@@ -213,7 +214,7 @@ export default function ChatPage() {
           <button onClick={()=>setKbOpen(o=>!o)} style={{ width:'100%', background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:6, padding:'4px 0' }}>
             <span style={{ color:'rgba(255,255,255,0.3)', fontSize:9, transition:'transform 0.2s', transform:kbOpen?'rotate(90deg)':'rotate(0deg)', display:'inline-block' }}>▶</span>
             <span style={{ fontSize:10, fontFamily:'var(--font-mono)', color:'rgba(255,255,255,0.35)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Knowledge Base</span>
-            <span style={{ marginLeft:'auto', fontSize:10, background:'rgba(93,221,200,0.15)', color:'#5DDDC8', border:'1px solid rgba(93,221,200,0.2)', borderRadius:10, padding:'1px 7px' }}>15 docs</span>
+            <span style={{ marginLeft:'auto', fontSize:10, background:'rgba(93,221,200,0.15)', color:'#5DDDC8', border:'1px solid rgba(93,221,200,0.2)', borderRadius:10, padding:'1px 7px' }}>16 docs</span>
           </button>
           {kbOpen && <div style={{ marginTop:6, display:'flex', flexDirection:'column', gap:2 }}>{DOCS.map((doc,i) => <button key={i} onClick={()=>send(doc.query)} style={{ background:'none', border:'none', padding:'4px 6px', fontSize:11, color:'rgba(255,255,255,0.5)', textAlign:'left', cursor:'pointer', borderRadius:5, transition:'all 0.12s', fontFamily:'var(--font-body)' }} onMouseEnter={e=>{e.currentTarget.style.background='rgba(93,221,200,0.1)';e.currentTarget.style.color='#5DDDC8'}} onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color='rgba(255,255,255,0.5)'}}>{doc.label}</button>)}</div>}
         </div>
