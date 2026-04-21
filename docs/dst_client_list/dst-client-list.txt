@@ -1,0 +1,160 @@
+# DST Client List
+
+This document lists all DST clients and their integration type.
+Integration types: SB (Sportsbook), PPH (Pay Per Head), PF (Platform), DF (Data Feed)
+
+## SB Clients — Sportsbook — full sportsbook integration (34 total)
+
+- Bet Latino [SB]
+- BetCorrect [Rebet client] [SB]
+- BetDSI [SB]
+- BetUS [SB]
+- Betanysports [SB]
+- Betonline (Redhat) [SB]
+- Bovada (tzone/librologic) [SB]
+- Bovada X [SB]
+- Caliente [use MXN VPN] [SB]
+- Cordialito [GCIT] [SB]
+- Dafabet (Sportserve, sportion, asianbge, nextbet) [SB]
+- Empelotados (Jazz) [SB]
+- Estadio Gana (EGANA) [Rebet client] [SB]
+- Facilitobet [SB]
+- Ganamex [SB]
+- Heritage (use LATAM/USA VPN) [SB]
+- Juancito (colchian) [SB]
+- LVBet.lv (Beefee) [SB]
+- LVBet.pl (Beefee) [SB]
+- LVbet.com (Beefee) [SB]
+- LetsBetMD (Beefee) [SB]
+- Metric [SB]
+- MyBookie (techpro.cr) [SB]
+- Rebet / Trivelta [SB]
+- SBG [SB]
+- SBG (Betnow) [SB]
+- SBG alt [SB]
+- Sellatuparley [SB]
+- Snoopdogg [Rebet client] [SB]
+- Sportsbetting.ag (Betonline) [SB]
+- Top Sport [SB]
+- WagerWeb (Heritage) [SB]
+- WinnersBet [SB]
+- Youwager (ffsvrs) [use CR VPN] [SB]
+
+## PPH Clients — Pay Per Head — PPH platform integration (27 total)
+
+- AIT [PPH]
+- Ace Per Head [ACEPPH] [PPH]
+- Action Pass [PPH]
+- BetBoss (redfigures/livefigures) [uses Betwolf sb] PPH [PPH]
+- Betphoenix [PPH]
+- Buckeye (COINDEVIL) (506mail.com, Skiff Mail, ghi.cr) [use LATAM VPN] [PPH]
+- DiamondSB [PPH]
+- HS Global [PPH]
+- IDSCA (bminc.eu) [PPH]
+- Jazz (isppro.net) [PPH]
+- Kings [PPH]
+- My Sport Office (MSO) [PPH]
+- Pay Per Head [PPH1] (247servicenow.com) [PPH]
+- PerHead [PPH]
+- PlayIt365 (greendothub) [PPH]
+- Power PPH (beachbum88) [PPH]
+- Price Per Head (gccs.ag) [PPH]
+- Price Per Player (3fhi.com) [PPH]
+- Realbookies [PPH]
+- Rebel (ticosports) [PPH]
+- SBO.AG [PPH]
+- TheVault.ag [PPH]
+- TicoSports ASI [PPH]
+- Ticosports DGS [PPH]
+- TrueBookies [PPH]
+- Trylnk (Colchian) [PPH]
+- Wintek PPH [PPH]
+
+## PF Clients — Platform — platform/white label integration (2 total)
+
+- Altenar (platform) [PF]
+- Royalsoft [PF]
+
+## DF Clients — Data Feed — data feed only integration (3 total)
+
+- Betby (platform) [DF]
+- Codere Playtech [DF]
+- Sportsbook.ag [DF]
+
+## Unknown Clients — Integration type not specified (2 total)
+
+- BetAdrian [Unknown]
+- Primewager [Unknown]
+
+## Client Integration Lookup
+
+Use this section to look up a specific client's integration type.
+
+- Ace Per Head [ACEPPH]: PPH (Pay Per Head — PPH platform integration)
+- Action Pass: PPH (Pay Per Head — PPH platform integration)
+- AIT: PPH (Pay Per Head — PPH platform integration)
+- Altenar (platform): PF (Platform — platform/white label integration)
+- Bet Latino: SB (Sportsbook — full sportsbook integration)
+- BetAdrian: Unknown (Integration type not specified)
+- Betanysports: SB (Sportsbook — full sportsbook integration)
+- BetBoss (redfigures/livefigures) [uses Betwolf sb] PPH: PPH (Pay Per Head — PPH platform integration)
+- Betby (platform): DF (Data Feed — data feed only integration)
+- BetCorrect [Rebet client]: SB (Sportsbook — full sportsbook integration)
+- BetDSI: SB (Sportsbook — full sportsbook integration)
+- Betonline (Redhat): SB (Sportsbook — full sportsbook integration)
+- Betphoenix: PPH (Pay Per Head — PPH platform integration)
+- BetUS: SB (Sportsbook — full sportsbook integration)
+- Bovada (tzone/librologic): SB (Sportsbook — full sportsbook integration)
+- Bovada X: SB (Sportsbook — full sportsbook integration)
+- Buckeye (COINDEVIL) (506mail.com, Skiff Mail, ghi.cr) [use LATAM VPN]: PPH (Pay Per Head — PPH platform integration)
+- Caliente [use MXN VPN]: SB (Sportsbook — full sportsbook integration)
+- Codere Playtech: DF (Data Feed — data feed only integration)
+- Cordialito [GCIT]: SB (Sportsbook — full sportsbook integration)
+- Dafabet (Sportserve, sportion, asianbge, nextbet): SB (Sportsbook — full sportsbook integration)
+- DiamondSB: PPH (Pay Per Head — PPH platform integration)
+- Empelotados (Jazz): SB (Sportsbook — full sportsbook integration)
+- Estadio Gana (EGANA) [Rebet client]: SB (Sportsbook — full sportsbook integration)
+- Facilitobet: SB (Sportsbook — full sportsbook integration)
+- Ganamex: SB (Sportsbook — full sportsbook integration)
+- Heritage (use LATAM/USA VPN): SB (Sportsbook — full sportsbook integration)
+- HS Global: PPH (Pay Per Head — PPH platform integration)
+- IDSCA (bminc.eu): PPH (Pay Per Head — PPH platform integration)
+- Jazz (isppro.net): PPH (Pay Per Head — PPH platform integration)
+- Juancito (colchian): SB (Sportsbook — full sportsbook integration)
+- Kings: PPH (Pay Per Head — PPH platform integration)
+- LetsBetMD (Beefee): SB (Sportsbook — full sportsbook integration)
+- LVbet.com (Beefee): SB (Sportsbook — full sportsbook integration)
+- LVBet.lv (Beefee): SB (Sportsbook — full sportsbook integration)
+- LVBet.pl (Beefee): SB (Sportsbook — full sportsbook integration)
+- Metric: SB (Sportsbook — full sportsbook integration)
+- My Sport Office (MSO): PPH (Pay Per Head — PPH platform integration)
+- MyBookie (techpro.cr): SB (Sportsbook — full sportsbook integration)
+- Pay Per Head [PPH1] (247servicenow.com): PPH (Pay Per Head — PPH platform integration)
+- PerHead: PPH (Pay Per Head — PPH platform integration)
+- PlayIt365 (greendothub): PPH (Pay Per Head — PPH platform integration)
+- Power PPH (beachbum88): PPH (Pay Per Head — PPH platform integration)
+- Price Per Head (gccs.ag): PPH (Pay Per Head — PPH platform integration)
+- Price Per Player (3fhi.com): PPH (Pay Per Head — PPH platform integration)
+- Primewager: Unknown (Integration type not specified)
+- Realbookies: PPH (Pay Per Head — PPH platform integration)
+- Rebel (ticosports): PPH (Pay Per Head — PPH platform integration)
+- Rebet / Trivelta: SB (Sportsbook — full sportsbook integration)
+- Royalsoft: PF (Platform — platform/white label integration)
+- SBG: SB (Sportsbook — full sportsbook integration)
+- SBG (Betnow): SB (Sportsbook — full sportsbook integration)
+- SBG alt: SB (Sportsbook — full sportsbook integration)
+- SBO.AG: PPH (Pay Per Head — PPH platform integration)
+- Sellatuparley: SB (Sportsbook — full sportsbook integration)
+- Snoopdogg [Rebet client]: SB (Sportsbook — full sportsbook integration)
+- Sportsbetting.ag (Betonline): SB (Sportsbook — full sportsbook integration)
+- Sportsbook.ag: DF (Data Feed — data feed only integration)
+- TheVault.ag: PPH (Pay Per Head — PPH platform integration)
+- TicoSports ASI: PPH (Pay Per Head — PPH platform integration)
+- Ticosports DGS: PPH (Pay Per Head — PPH platform integration)
+- Top Sport: SB (Sportsbook — full sportsbook integration)
+- TrueBookies: PPH (Pay Per Head — PPH platform integration)
+- Trylnk (Colchian): PPH (Pay Per Head — PPH platform integration)
+- WagerWeb (Heritage): SB (Sportsbook — full sportsbook integration)
+- WinnersBet: SB (Sportsbook — full sportsbook integration)
+- Wintek PPH: PPH (Pay Per Head — PPH platform integration)
+- Youwager (ffsvrs) [use CR VPN]: SB (Sportsbook — full sportsbook integration)
