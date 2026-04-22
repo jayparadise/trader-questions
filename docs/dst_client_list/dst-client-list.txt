@@ -57,3 +57,4 @@ This document lists all DST clients and their integration type.
 - TrueBookies: PPH (Pay Per Head — PPH platform integration)
 - Youwager: SB (Sportsbook — full sportsbook integration)
 - Youwager: SB (Sportsbook — full sportsbook integration)
+
